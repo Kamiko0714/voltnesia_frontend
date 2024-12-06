@@ -76,116 +76,118 @@ class _KontrolScreenState extends State<KontrolPage> {
               topRight: Radius.circular(40.0), // Sudut melengkung di atas kanan
             ),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                'KONTROL',
-                textAlign: TextAlign.left,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
-              ),
-              SizedBox(height: 20),
-              Text(
-                'Tekan tombol yang tersedia untuk menghidupkan\n'
-                'manonaktifkan pemberitahuan ketika pengguna\n'
-                'tidak menggunakan aplikasi.',
-                textAlign: TextAlign.left,
-                style: TextStyle(fontSize: 16, color: Colors.black),
-              ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Expanded(
-                    child: Text(
-                      'PERINGATAN KONDISI PERANGKAT PINTAR',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  Switch(
-                    value: _isFeature1,
-                    onChanged: (value) {
-                      _toggleFeature1();
-                    },
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Expanded(
-                    child: Text(
-                      'PENGGUNAAN LISTRIK BERLEBIHAN',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  Switch(
-                    value: _isOveruse,
-                    onChanged: (value) {
-                      _toggleOveruse();
-                    },
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-              Text(
-                'KONTROL BEBAN',
-                textAlign: TextAlign.left,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
-              ),
-              SizedBox(height: 10),
-              Text(
-                'Melakukan kontrol terhadap relay yang tersedia\n'
-                'pada sistem, untuk mengirim sinyal bertujuan untuk\n'
-                'menyalakan atau menonaktifkan lampu teras.',
-                textAlign: TextAlign.left,
-                style: TextStyle(fontSize: 16, color: Colors.black),
-              ),
-              SizedBox(height: 20),
-              Text(
-                'TEKAN UNTUK MENYALAKAN\n'
-                'TEKAN LAGI UNTUK MEMATIKAN',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.black),
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _toggleLamp,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFfff7e8),
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    side: BorderSide(
-                      color: _isLampOn ? Color(0xFFFFCD31) : Colors.transparent,
-                      width: 3,
-                    ),
-                  ),
+          child: SingleChildScrollView( // Tambahkan SingleChildScrollView di sini
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'KONTROL',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
+                SizedBox(height: 20),
+                Text(
+                  'Tekan tombol yang tersedia untuk menghidupkan\n'
+                  'manonaktifkan pemberitahuan ketika pengguna\n'
+                  'tidak menggunakan aplikasi.',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(fontSize: 16, color: Colors.black),
+                ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Icon(
-                      _isLampOn ? Icons.lightbulb : Icons.lightbulb_outline,
-                      color: _isLampOn ? Color(0xFFFFCD31) : Colors.grey,
+                    Expanded(
+                      child: Text(
+                        'PERINGATAN KONDISI PERANGKAT PINTAR',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+                        textAlign: TextAlign.left,
+                      ),
                     ),
                     SizedBox(width: 10),
-                    Text(
-                      'Lampu',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: _isLampOn ? Color(0xFFFFCD31) : Colors.grey,
-                      ),
+                    Switch(
+                      value: _isFeature1,
+                      onChanged: (value) {
+                        _toggleFeature1();
+                      },
                     ),
                   ],
                 ),
-              ),
-            ],
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        'PENGGUNAAN LISTRIK BERLEBIHAN',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Switch(
+                      value: _isOveruse,
+                      onChanged: (value) {
+                        _toggleOveruse();
+                      },
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20),
+                Text(
+                  'KONTROL BEBAN',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'Melakukan kontrol terhadap relay yang tersedia\n'
+                  'pada sistem, untuk mengirim sinyal bertujuan untuk\n'
+                  'menyalakan atau menonaktifkan lampu teras.',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(fontSize: 16, color: Colors.black),
+                ),
+                SizedBox(height: 20),
+                Text(
+                  'TEKAN UNTUK MENYALAKAN\n'
+                  'TEKAN LAGI UNTUK MEMATIKAN',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16, color: Colors.black),
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: _toggleLamp,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFfff7e8),
+                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      side: BorderSide(
+                        color: _isLampOn ? Color(0xFFFFCD31) : Colors.transparent,
+                        width: 3,
+                      ),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Icon(
+                        _isLampOn ? Icons.lightbulb : Icons.lightbulb_outline,
+                        color: _isLampOn ? Color(0xFFFFCD31) : Colors.grey,
+                      ),
+                      SizedBox(width: 10),
+                      Text(
+                        'Lampu',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: _isLampOn ? Color(0xFFFFCD31) : Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
