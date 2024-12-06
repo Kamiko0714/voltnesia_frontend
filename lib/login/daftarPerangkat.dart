@@ -24,7 +24,7 @@ class _DaftarPerangkatPageState extends State<DaftarPerangkatPage> {
 
     try {
       final response = await _dio.get(
-        'http://voltnesia.msibiot.com:8000/devices/check-esp?',
+        'http://voltnesia.msibiot.com:8000/esp/registration?id_esp=esp_id',
         queryParameters: {'espcode': idPerangkat},
       );
 

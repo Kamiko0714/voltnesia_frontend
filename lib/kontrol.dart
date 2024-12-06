@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 
 class KontrolPage extends StatefulWidget {
   @override
@@ -11,10 +12,31 @@ class _KontrolScreenState extends State<KontrolPage> {
   bool _isFeature1 = false;
   bool _isFeature2 = false;
 
+  final Dio _dio = Dio();
+
+  Future<void> _sendLampRequest(bool isOn) async {
+    try {
+      final response = await _dio.post(
+        'http://voltnesia.msibiot.com:8000/update-device', // Ganti dengan URL
+        data: {'isOn': isOn},
+      );
+
+      if (response.statusCode == 200) {
+        print('Lamp request successful');
+      } else {
+        print('Lamp request failed with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error sending lamp request: $e');
+    }
+  }
+
   void _toggleLamp() {
     setState(() {
       _isLampOn = !_isLampOn;
     });
+
+    _sendLampRequest(_isLampOn);
   }
 
   void _toggleOveruse() {
@@ -42,7 +64,7 @@ class _KontrolScreenState extends State<KontrolPage> {
       appBar: AppBar(
         title: Text('Kontrol Lampu'),
         backgroundColor: Color(0xFFfff7e8),
-      ), 
+      ),
       body: Container(
         color: Color(0xFFfff7e8), // Background color of the page
         child: Container(
