@@ -9,16 +9,16 @@ class InformasiPage extends StatefulWidget {
 }
 
 class _InformasiPageState extends State<InformasiPage> {
-  double suhu = 0.0; // Data untuk suhu
-  double kondisi = 0.0; // Data untuk kondisi
-  List<double> frekuensi = []; // Data untuk grafik frekuensi
+  double suhu = 33.7; // Data untuk suhu
+  double kondisi = 100.0; // Data untuk kondisi
+  List<double> frekuensi = [53]; // Data untuk grafik frekuensi
 
   final Dio dio = Dio(); // Inisialisasi Dio
 
   @override
   void initState() {
     super.initState();
-    fetchData(); // Ambil data dari API saat inisialisasi
+    // fetchData(); // Ambil data dari API saat inisialisasi
   }
 
   Future<void> fetchData() async {

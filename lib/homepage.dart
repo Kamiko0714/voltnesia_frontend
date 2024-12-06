@@ -14,10 +14,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Dio _dio = Dio();
-  String biaya = "Rp. 0,00 KW/h";
-  String daya = "Hitungan per jam";
-  String arus = "Hitungan per jam";
-  String tegangan = "Hitungan per jam";
+  String biaya = "0.50 KW/h";
+  String daya = "45 watt";
+  String arus = "0.35";
+  String tegangan = "238.0";
 
   @override
   void initState() {
@@ -81,11 +81,11 @@ class _HomePageState extends State<HomePage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(child: _buildInfoCard('DAYA', 'Periode : Oktober', daya)),
+                  Expanded(child: _buildInfoCard('DAYA', 'Periode : Desember', daya)),
                   SizedBox(width: 2),
-                  Expanded(child: _buildInfoCard('ARUS', 'Periode : Oktober', arus)),
+                  Expanded(child: _buildInfoCard('ARUS', 'Periode : Desember', arus)),
                   SizedBox(width: 8),
-                  Expanded(child: _buildInfoCard('TEGANGAN', 'Periode : Oktober', tegangan)),
+                  Expanded(child: _buildInfoCard('TEGANGAN', 'Periode : Desember', tegangan)),
                 ],
               ),
               SizedBox(height: 1),

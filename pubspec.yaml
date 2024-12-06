@@ -35,7 +35,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   fl_chart: ^0.69.2
-  syncfusion_flutter_gauges: ^27.2.4
+  syncfusion_flutter_gauges: ^27.2.5
   dio: ^5.7.0
   url_launcher: ^6.3.1
   flutter_local_notifications: ^17.1.2
@@ -96,7 +96,7 @@ flutter:
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf 
   #         weight: 700
   #
   # For details regarding fonts from package dependencies,
