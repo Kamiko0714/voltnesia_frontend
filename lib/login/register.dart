@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/homepage.dart'; // Pastikan MainScreen sudah didefinisikan di sini
-import 'package:frontend/login/login.dart'; // Untuk navigasi kembali ke login
+import 'package:dio/dio.dart'; // Paket Dio untuk HTTP request
+import 'package:frontend/homepage.dart'; // Pastikan file HomePage sudah diimpor
+import 'package:frontend/login/login.dart'; // Untuk navigasi kembali ke halaman login
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -19,7 +20,7 @@ class _RegisterPageState extends State<RegisterPage> {
     });
   }
 
-  void _navigateToNextPage() {
+  Future<void> _navigateToNextPage() async {
     final name = _nameController.text.trim();
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
@@ -46,8 +47,37 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
 
-    // Jika semua validasi lolos, lanjutkan ke halaman berikutnya
-    Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+    try {
+      // Inisialisasi Dio
+      Dio dio = Dio();
+      final response = await dio.post(
+        "http://voltnesia.msibiot.com:8000/auth/register",
+        data: {
+          "name": name,
+          "email": email,
+          "password": password,
+        },
+      );
+
+      // Periksa respons dari backend
+      if (response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Registrasi berhasil!')),
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Registrasi gagal: ${response.data["message"] ?? "Terjadi kesalahan"}')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Terjadi kesalahan: $e')),
+      );
+    }
   }
 
   @override

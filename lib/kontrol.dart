@@ -110,6 +110,10 @@ class _KontrolScreenState extends State<KontrolPage> {
                       onChanged: (value) {
                         _toggleFeature1();
                       },
+                      activeColor: Colors.grey, // Warna ketika aktif
+                      activeTrackColor: Color(0xFFfff7e8), // Warna track ketika aktif
+                      inactiveThumbColor: Color(0xFFfff7e8), // Warna ketika tidak aktif
+                      inactiveTrackColor: Colors.grey, // Warna track ketika tidak aktif
                     ),
                   ],
                 ),
@@ -130,6 +134,10 @@ class _KontrolScreenState extends State<KontrolPage> {
                       onChanged: (value) {
                         _toggleOveruse();
                       },
+                      activeColor: Colors.grey, // Warna ketika aktif
+                      activeTrackColor: Color(0xFFfff7e8), // Warna track ketika aktif
+                      inactiveThumbColor: Color(0xFFfff7e8), // Warna ketika tidak aktif
+                      inactiveTrackColor: Colors.grey, // Warna track ketika tidak aktif
                     ),
                   ],
                 ),
@@ -158,7 +166,7 @@ class _KontrolScreenState extends State<KontrolPage> {
                 ElevatedButton(
                   onPressed: _toggleLamp,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFfff7e8),
+                    backgroundColor: Colors.blueGrey[100],
                     padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -173,14 +181,14 @@ class _KontrolScreenState extends State<KontrolPage> {
                     children: <Widget>[
                       Icon(
                         _isLampOn ? Icons.lightbulb : Icons.lightbulb_outline,
-                        color: _isLampOn ? Color(0xFFFFCD31) : Colors.grey,
+                        color: _isLampOn ? Color(0xFFFFCD31) : Colors.black,
                       ),
                       SizedBox(width: 10),
                       Text(
                         'Lampu',
                         style: TextStyle(
                           fontSize: 18,
-                          color: _isLampOn ? Color(0xFFFFCD31) : Colors.grey,
+                          color: _isLampOn ? Color(0xFFFFCD31) : Colors.black,
                         ),
                       ),
                     ],
