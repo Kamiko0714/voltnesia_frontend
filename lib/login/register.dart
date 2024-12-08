@@ -150,7 +150,7 @@ Row(
               style: TextStyle(
                 fontSize: 14.0,
                 fontWeight: FontWeight.bold,
-                color: Colors.white, // Warna teks
+                color: Colors.blue[700], // Warna teks
                 decoration: TextDecoration.underline,
               ),
             ),
