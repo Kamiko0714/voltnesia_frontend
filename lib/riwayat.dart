@@ -8,9 +8,9 @@ class RiwayatPage extends StatefulWidget {
 }
 
 class _RiwayatPageState extends State<RiwayatPage> {
-  List<double> barChartData = [0, 0, 0, 0];
-  List<Map<String, String>> usageData = [];
-
+  List<double> barChartData = [150, 120, 180, 90]; // Data statis untuk grafik
+  List<Map<String, String>> usageData = []; // Data akan diambil dari API
+  
   @override
   void initState() {
     super.initState();
@@ -18,36 +18,22 @@ class _RiwayatPageState extends State<RiwayatPage> {
   }
 
   Future<void> fetchDataFromAPI() async {
-    final dio = Dio();
     try {
-      final response = await dio.get('http://voltnesia.msibiot.com:8000/devices/getall-pzem?page=0&page_size=4');
-      final data = response.data;
-
-      // Print the raw API response to debug
-      print(data);
-
+      var response = await Dio().get('https://your-api-endpoint.com/usage-data');
+      
+      // Parse the response and update the usageData list
+      List<Map<String, String>> data = List<Map<String, String>>.from(
+        response.data.map((item) => {
+          'bulan': item['bulan'],
+          'periode': item['periode'],
+          'penggunaan': item['penggunaan'],
+          'total': item['total'],
+        }),
+      );
+      
+      // Update state with fetched data
       setState(() {
-        // Update bar chart data
-        if (data['monthlyUsage'] != null && data['monthlyUsage'] is List) {
-          barChartData = (data['monthlyUsage'] as List)
-              .map((value) => (value as num).toDouble())
-              .toList();
-        }
-
-        // Update usage details
-        if (data['usageDetails'] != null && data['usageDetails'] is List) {
-          usageData = (data['usageDetails'] as List)
-              .map((item) {
-                return {
-                  'bulan': item['month']?.toString() ?? 'Unknown',
-                  'periode': item['period']?.toString() ?? 'Unknown',
-                  'penggunaan': '${item['usage']?.toString() ?? '0'} KWh',
-                  'total': 'Rp. ${item['cost']?.toString() ?? '0'}',
-                };
-              })
-              .toList()
-              .cast<Map<String, String>>();
-        }
+        usageData = data;
       });
     } catch (e) {
       print('Error fetching data: $e');
@@ -89,12 +75,16 @@ class _RiwayatPageState extends State<RiwayatPage> {
               ),
             ),
             SizedBox(height: 8),
-            ...usageData.map((data) => _buildRiwayatPengeluaran(
-                  data['bulan']!,
-                  data['periode']!,
-                  data['penggunaan']!,
-                  data['total']!,
-                )),
+            // Only display data if it's fetched
+            if (usageData.isNotEmpty)
+              ...usageData.map((data) => _buildRiwayatPengeluaran(
+                    data['bulan']!,
+                    data['periode']!,
+                    data['penggunaan']!,
+                    data['total']!,
+                  )),
+            if (usageData.isEmpty)
+              Center(child: CircularProgressIndicator()), // Show loading indicator while fetching data
           ],
         ),
       ),

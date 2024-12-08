@@ -9,7 +9,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final _nameController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isChecked = false;
@@ -21,11 +21,11 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future<void> _navigateToNextPage() async {
-    final name = _nameController.text.trim();
+    final username = _usernameController.text.trim();
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
-    if (name.isEmpty || email.isEmpty || password.isEmpty) {
+    if (username.isEmpty || email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Semua kolom harus diisi.')),
       );
@@ -53,7 +53,7 @@ class _RegisterPageState extends State<RegisterPage> {
       final response = await dio.post(
         "http://voltnesia.msibiot.com:8000/auth/register",
         data: {
-          "name": name,
+          "username": username,
           "email": email,
           "password": password,
         },
@@ -95,7 +95,7 @@ class _RegisterPageState extends State<RegisterPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextField(
-                controller: _nameController,
+                controller: _usernameController,
                 decoration: InputDecoration(
                   labelText: 'Nama User',
                   border: OutlineInputBorder(),

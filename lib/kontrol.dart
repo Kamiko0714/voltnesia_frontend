@@ -11,40 +11,39 @@ class _KontrolScreenState extends State<KontrolPage> {
   bool _isOveruse = false;
   bool _isFeature1 = false;
   bool _isFeature2 = false;
+  Dio _dio = Dio();
 
-  final Dio _dio = Dio();
+  // Ganti dengan URL endpoint API Anda
+  final String _apiUrl = "https://your-api-url.com/api/lamp"; // Ubah sesuai URL API Anda
 
-  Future<void> _sendLampRequest(bool isOn) async {
+  // Fungsi untuk mengirim data ke API
+  Future<void> _updateLampStatus(bool status) async {
     try {
       final response = await _dio.post(
-        'http://voltnesia.msibiot.com:8000/update-device', // Ganti dengan URL
-        data: {'isOn': isOn},
+        _apiUrl,
+        data: {'lamp_status': status},
+        options: Options(headers: {'Content-Type': 'application/json'}),
       );
-
       if (response.statusCode == 200) {
-        print('Lamp request successful');
+        print('Status lampu berhasil diperbarui: $status');
       } else {
-        print('Lamp request failed with status: ${response.statusCode}');
+        print('Gagal memperbarui status lampu: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error sending lamp request: $e');
+      print('Error saat mengirim data: $e');
     }
   }
 
-  void _toggleLamp() {
+  // Fungsi untuk toggle lamp dan memperbarui API
+  void _toggleLamp() async {
     setState(() {
       _isLampOn = !_isLampOn;
     });
 
-    _sendLampRequest(_isLampOn);
+    await _updateLampStatus(_isLampOn);
   }
 
-  void _toggleOveruse() {
-    setState(() {
-      _isOveruse = !_isOveruse;
-    });
-  }
-
+  // Fungsi untuk toggle fitur lainnya
   void _toggleFeature1() {
     setState(() {
       _isFeature1 = !_isFeature1;
@@ -57,6 +56,12 @@ class _KontrolScreenState extends State<KontrolPage> {
     });
   }
 
+  void _toggleOveruse() {
+    setState(() {
+      _isOveruse = !_isOveruse;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,17 +71,17 @@ class _KontrolScreenState extends State<KontrolPage> {
         backgroundColor: Color(0xFFfff7e8),
       ),
       body: Container(
-        color: Color(0xFFfff7e8), // Background color of the page
+        color: Color(0xFFfff7e8),
         child: Container(
           padding: EdgeInsets.all(26.0),
           decoration: BoxDecoration(
             color: Color(0xFFFF15aea2),
             borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(40.0), // Sudut melengkung di atas kiri
-              topRight: Radius.circular(40.0), // Sudut melengkung di atas kanan
+              topLeft: Radius.circular(40.0),
+              topRight: Radius.circular(40.0),
             ),
           ),
-          child: SingleChildScrollView( // Tambahkan SingleChildScrollView di sini
+          child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
@@ -88,7 +93,7 @@ class _KontrolScreenState extends State<KontrolPage> {
                 SizedBox(height: 20),
                 Text(
                   'Tekan tombol yang tersedia untuk menghidupkan\n'
-                  'manonaktifkan pemberitahuan ketika pengguna\n'
+                  'atau menonaktifkan pemberitahuan ketika pengguna\n'
                   'tidak menggunakan aplikasi.',
                   textAlign: TextAlign.left,
                   style: TextStyle(fontSize: 16, color: Colors.black),
@@ -110,10 +115,10 @@ class _KontrolScreenState extends State<KontrolPage> {
                       onChanged: (value) {
                         _toggleFeature1();
                       },
-                      activeColor: Colors.grey, // Warna ketika aktif
-                      activeTrackColor: Color(0xFFfff7e8), // Warna track ketika aktif
-                      inactiveThumbColor: Color(0xFFfff7e8), // Warna ketika tidak aktif
-                      inactiveTrackColor: Colors.grey, // Warna track ketika tidak aktif
+                      activeColor: Colors.grey,
+                      activeTrackColor: Color(0xFFfff7e8),
+                      inactiveThumbColor: Color(0xFFfff7e8),
+                      inactiveTrackColor: Colors.grey,
                     ),
                   ],
                 ),
@@ -134,10 +139,10 @@ class _KontrolScreenState extends State<KontrolPage> {
                       onChanged: (value) {
                         _toggleOveruse();
                       },
-                      activeColor: Colors.grey, // Warna ketika aktif
-                      activeTrackColor: Color(0xFFfff7e8), // Warna track ketika aktif
-                      inactiveThumbColor: Color(0xFFfff7e8), // Warna ketika tidak aktif
-                      inactiveTrackColor: Colors.grey, // Warna track ketika tidak aktif
+                      activeColor: Colors.grey,
+                      activeTrackColor: Color(0xFFfff7e8),
+                      inactiveThumbColor: Color(0xFFfff7e8),
+                      inactiveTrackColor: Colors.grey,
                     ),
                   ],
                 ),

@@ -4,7 +4,6 @@ import 'profile.dart';
 import 'riwayat.dart';
 import 'kontrol.dart';
 import 'informasi.dart';
-import 'dart:convert';
 
 class HomePage extends StatefulWidget {
   @override
@@ -12,47 +11,41 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Dio _dio = Dio();
-  String current = "Ampere";
-  String power = "Watt";
-  String voltase = "Volt";
-  String energy = "KW/h";
-
-  // Token yang Anda dapatkan dari Postman
-  String authToken = "HD3P2kSEFmatzl0KFBlJWXO1vNbJ3Xvv3mj5DkXlMTESA2OVhcpGpsFJ2t5UZVR2";
+  String current = "Loading...";
+  String power = "Loading...";
+  String voltase = "Loading...";
+  String energy = "Loading...";
+  final String espId = "12345"; // Ganti dengan ID ESP yang sesuai
 
   @override
   void initState() {
     super.initState();
-    fetchData();
+    fetchDeviceData();
   }
 
-  Future<void> fetchData() async {
+  Future<void> fetchDeviceData() async {
+    final Dio dio = Dio();
+    final String apiUrl = "http://voltnesia.msibiot.com/devices?esp_id=$espId";
+
     try {
-      // Menambahkan token ke dalam header Authorization
-      final response = await _dio.get(
-        'http://voltnesia.msibiot.com:8000/devices?esp_id=voltnesia2k24',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $authToken',
-          },
-        ),
-      );
-      if (response.statusCode == 200) {
+      final Response response = await dio.get(apiUrl);
+      if (response.statusCode == 200 && response.data != null) {
         setState(() {
-          energy = "Rp. ${response.data['energy']} KW/h";
-          power = "${response.data['power']} W/jam";
           current = "${response.data['current']} A/jam";
+          power = "${response.data['power']} W/jam";
           voltase = "${response.data['voltase']} V/jam";
+          energy = "Rp. ${response.data['energy']} KW/h";
         });
-      } else if (response.statusCode == 401) {
-        // Penanganan untuk error 401 (Unauthorized)
-        print("Error: Unauthorized access. Please check your token.");
       } else {
-        print("Error fetching data: ${response.statusCode}");
+        setState(() {
+          current = power = voltase = energy = "Data tidak tersedia";
+        });
       }
-    } catch (e) {
-      print("Error fetching data: $e");
+    } catch (error) {
+      setState(() {
+        current = power = voltase = energy = "Error memuat data";
+      });
+      print("Error fetching data: $error");
     }
   }
 
@@ -187,7 +180,7 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'energy bulan ini',
+                'Energy bulan ini',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
               ),
               SizedBox(height: 8),

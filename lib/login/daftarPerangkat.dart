@@ -24,7 +24,8 @@ class _DaftarPerangkatPageState extends State<DaftarPerangkatPage> {
 
     try {
       final response = await _dio.get(
-        'http://voltnesia.msibiot.com:8000/esp/registration?id_esp=' + idPerangkat,
+        'http://voltnesia.msibiot.com:8000/esp/registration',
+        queryParameters: {'id_esp': idPerangkat},
       );
 
       if (response.statusCode == 200) {
@@ -37,12 +38,12 @@ class _DaftarPerangkatPageState extends State<DaftarPerangkatPage> {
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Verifikasi gagal: ${response.data['message']}')),
+          SnackBar(content: Text('Verifikasi gagal: ${response.data['message'] ?? 'Kesalahan tidak diketahui'}')),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Terjadi kesalahan: $e')),
+        SnackBar(content: Text('Terjadi kesalahan: ${e.toString()}')),
       );
     }
   }
@@ -52,9 +53,9 @@ class _DaftarPerangkatPageState extends State<DaftarPerangkatPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Daftar Perangkat'),
-        backgroundColor: Color(0xFFFF15aea2),
+        backgroundColor: Color(0xFF15aea2),
       ),
-      backgroundColor: Color(0xFFFF15aea2),
+      backgroundColor: Color(0xFF15aea2),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -64,6 +65,9 @@ class _DaftarPerangkatPageState extends State<DaftarPerangkatPage> {
               'assets/login.png',
               width: 240,
               height: 240,
+              errorBuilder: (context, error, stackTrace) {
+                return Icon(Icons.error, size: 100, color: Colors.red);
+              },
             ),
             SizedBox(height: 20),
             TextField(
@@ -77,7 +81,7 @@ class _DaftarPerangkatPageState extends State<DaftarPerangkatPage> {
             ElevatedButton(
               onPressed: _verifikasiPerangkat,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFfff7e8),
+                backgroundColor: Color(0xFFF7E8),
                 foregroundColor: Colors.black,
               ),
               child: Text('Verifikasi'),
@@ -91,7 +95,7 @@ class _DaftarPerangkatPageState extends State<DaftarPerangkatPage> {
                 );
               },
               child: Text(
-                'Sudah Punya Akun? login disini',
+                'Sudah Punya Akun? Login di sini',
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.black,
