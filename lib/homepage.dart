@@ -11,13 +11,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // Variables to hold the ESP data
   String current = "Loading...";
   String power = "Loading...";
   String voltase = "Loading...";
   String energy = "Loading...";
-  
-  // ESP ID
   final String espId = "voltnesia2k24";
 
   @override
@@ -26,13 +23,17 @@ class _HomePageState extends State<HomePage> {
     fetchDeviceData();
   }
 
-  // Fetch data from ESP using Dio
   Future<void> fetchDeviceData() async {
     final Dio dio = Dio();
-    final String apiUrl = "http://voltnesia.msibiot.com/devices?esp_id=$espId";
+    final String apiUrl = "http://voltnesia.msibiot.com:8000/devices?esp_id=$espId";
+
+    print("Fetching data from API: $apiUrl");
 
     try {
       final Response response = await dio.get(apiUrl);
+      print("Response status: ${response.statusCode}");
+      print("Response data: ${response.data}");
+
       if (response.statusCode == 200 && response.data != null) {
         setState(() {
           current = "${response.data['current']} A/jam";
@@ -44,12 +45,14 @@ class _HomePageState extends State<HomePage> {
         setState(() {
           current = power = voltase = energy = "Data tidak tersedia";
         });
+        print("Unexpected response format: ${response.data}");
       }
-    } catch (error) {
+    } catch (error, stackTrace) {
       setState(() {
         current = power = voltase = energy = "Error memuat data";
       });
       print("Error fetching data: $error");
+      print("StackTrace: $stackTrace");
     }
   }
 
