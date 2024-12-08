@@ -11,11 +11,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  // Variables to hold the ESP data
   String current = "Loading...";
   String power = "Loading...";
   String voltase = "Loading...";
   String energy = "Loading...";
-  final String espId = "12345"; // Ganti dengan ID ESP yang sesuai
+  
+  // ESP ID
+  final String espId = "voltnesia2k24";
 
   @override
   void initState() {
@@ -23,6 +26,7 @@ class _HomePageState extends State<HomePage> {
     fetchDeviceData();
   }
 
+  // Fetch data from ESP using Dio
   Future<void> fetchDeviceData() async {
     final Dio dio = Dio();
     final String apiUrl = "http://voltnesia.msibiot.com/devices?esp_id=$espId";
