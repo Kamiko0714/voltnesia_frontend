@@ -68,6 +68,10 @@ class _RegisterPageState extends State<RegisterPage> {
           context,
           MaterialPageRoute(builder: (context) => HomePage()),
         );
+      } else if (response.statusCode == 400) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Registrasi gagal: Data yang dimasukkan tidak valid.')),
+        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Registrasi gagal: ${response.data["message"] ?? "Terjadi kesalahan"}')),
@@ -119,34 +123,43 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
               ),
               SizedBox(height: 24.0),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Checkbox(
-                    value: _isChecked,
-                    onChanged: _toggleCheckbox,
-                  ),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        // Navigasi ke halaman syarat dan ketentuan
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Tampilkan Syarat dan Ketentuan')),
-                        );
-                      },
-                      child: Text(
-                        'Dengan ini saya membaca, memahami, dan menyetujui Syarat dan Ketentuan serta Kebijakan Privasi.',
-                        style: TextStyle(
-                          fontSize: 14.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+Row(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    Checkbox(
+      value: _isChecked,
+      onChanged: _toggleCheckbox,
+    ),
+    Expanded(
+      child: GestureDetector(
+        onTap: () {
+          // Navigasi ke halaman syarat dan ketentuan
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Tampilkan Syarat dan Ketentuan')),
+          );
+        },
+        child: Card(
+          color: Color.fromARGB(255, 18, 145, 134),  // Warna latar belakang Card
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              'Dengan ini saya membaca, memahami, dan menyetujui Syarat dan Ketentuan serta Kebijakan Privasi.',
+              style: TextStyle(
+                fontSize: 14.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.white, // Warna teks
+                decoration: TextDecoration.underline,
               ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  ],
+),
               SizedBox(height: 24.0),
               ElevatedButton(
                 onPressed: _navigateToNextPage,
