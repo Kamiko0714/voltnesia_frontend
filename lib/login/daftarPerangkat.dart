@@ -29,21 +29,40 @@ class _DaftarPerangkatPageState extends State<DaftarPerangkatPage> {
       );
 
       if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Perangkat berhasil diverifikasi')),
-        );
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => RegisterPage()),
-        );
+        if (response.data['message'] == 'ESP belum terdaftar pada user manapun') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Perangkat berhasil diverifikasi')),
+          );
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => RegisterPage()),
+          );
+        }
+        else if (response.data['message'] == "ESP sudah terdaftar pada user lain, silahkan gunakan ESP lain atau hubungi admin") {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Perangkat sudah terdaftar pada user lain')),
+          );
+        }
+        
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Verifikasi gagal: ${response.data['message'] ?? 'Kesalahan tidak diketahui'}')),
+          SnackBar(
+              content: Text('Verifikasi gagal: ${response.data['message']}')),
         );
       }
     } catch (e) {
+      if (e is DioException) {
+        if (e.response?.statusCode == 404) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Perangkat tidak ditemukan')),
+          );
+          return;
+        } 
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Terjadi kesalahan: ${e.toString()}')),
+        // SnackBar(content: Text('Terjadi kesalahan: ${e.toString()}')),
+        SnackBar(content: Text('Perangkat tidak ditemukan')), // :v
       );
     }
   }

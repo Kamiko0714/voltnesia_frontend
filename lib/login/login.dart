@@ -1,7 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'passRec.dart';
 import 'package:frontend/homepage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -33,9 +36,13 @@ class _LoginPageState extends State<LoginPage> {
         },
       );
 
-      if (response.statusCode == 200) {
-        // Pastikan response.data adalah objek yang sesuai dengan ekspektasi
-        if (response.data != null && response.data.containsKey('message')) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = response.data;
+
+        if (data != null && data['token'] != null) {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('token', data['token']);
+
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => HomePage()),
@@ -52,12 +59,10 @@ class _LoginPageState extends State<LoginPage> {
       }
     } on DioError catch (e) {
       if (e.response != null) {
-        // Menangani jika ada error dari server
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Terjadi kesalahan: ${e.response?.data['message'] ?? e.message}')),
         );
       } else {
-        // Menangani jika kesalahan jaringan atau request tidak berhasil
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Terjadi kesalahan: ${e.message}')),
         );

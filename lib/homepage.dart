@@ -11,13 +11,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // Dio instance
   final Dio _dio = Dio();
+  final String espId = "voltnesia2k24";
 
-  // ESP ID (sesuaikan sesuai kebutuhan)
-  String espId = "voltnesia2k24";
-
-  // Data API
   String current = "Loading...";
   String power = "Loading...";
   String voltase = "Loading...";
@@ -26,10 +22,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _fetchEnergyData(); // Fetch data saat widget diinisialisasi
+    _fetchEnergyData();
   }
 
-  // Fungsi untuk fetch data dari API
   Future<void> _fetchEnergyData() async {
     try {
       final response = await _dio.get(
@@ -39,8 +34,6 @@ class _HomePageState extends State<HomePage> {
 
       if (response.statusCode == 200) {
         final data = response.data;
-
-        // Ambil data dari list "devices" berdasarkan id yang sesuai
         var deviceData = data['devices'].firstWhere(
           (device) => device['id_esp'] == espId && device['device_type'] == 'pzem',
           orElse: () => null,
@@ -54,179 +47,92 @@ class _HomePageState extends State<HomePage> {
             energy = "${deviceData['energy']} KW/h";
           });
         } else {
-          setState(() {
-            current = "Data not found";
-            power = "Data not found";
-            voltase = "Data not found";
-            energy = "Data not found";
-          });
+          _setErrorState("Data not found");
         }
       } else {
-        throw Exception('Failed to load data');
+        _setErrorState("Failed to load data");
       }
     } catch (e) {
       print("Error fetching data: $e");
-      setState(() {
-        current = "Error";
-        power = "Error";
-        voltase = "Error";
-        energy = "Error";
-      });
+      _setErrorState("Error");
     }
+  }
+
+  void _setErrorState(String message) {
+    setState(() {
+      current = message;
+      power = message;
+      voltase = message;
+      energy = message;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFFF15aea2),
-      appBar: AppBar(
-        title: Builder(
-          builder: (context) {
-            return TextButton(
-              onPressed: () {
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => ProfilePage()));
-              },
-              child: Text(
-                'Profile',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            );
-          },
-        ),
-        backgroundColor: Color(0xFFfff7e8),
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(5.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildCostCard(),
-              SizedBox(height: 10),
-              _buildMotivationalText(),
-              SizedBox(height: 10),
-              Text(
-                'Data Penggunaan Energi',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(child: _buildInfoCard('Power', 'Periode : Desember', power)),
-                  SizedBox(width: 5),
-                  Expanded(child: _buildInfoCard('Current', 'Periode : Desember', current)),
-                ],
-              ),
-              SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(child: _buildInfoCard('Voltase', 'Periode : Desember', voltase)),
-                  SizedBox(width: 5),
-                  Expanded(child: _buildInfoCard('Energy', 'Periode : Desember', energy)),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: ClipRRect(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-            child: BottomNavigationBar(
-              items: [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.history),
-                  label: 'Riwayat',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.settings),
-                  label: 'Kontrol',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.info),
-                  label: 'Informasi',
-                ),
-              ],
-              selectedItemColor: Color(0xFF3a7b7e),
-              unselectedItemColor: Color(0xFF3a7b7e),
-              backgroundColor: Color(0xFFfff7e8),
-              onTap: (index) {
-                switch (index) {
-                  case 0:
-                    Navigator.push(
-                        context, MaterialPageRoute(builder: (context) => RiwayatPage()));
-                    break;
-                  case 1:
-                    Navigator.push(
-                        context, MaterialPageRoute(builder: (context) => KontrolPage()));
-                    break;
-                  case 2:
-                    Navigator.push(
-                        context, MaterialPageRoute(builder: (context) => InformasiPage()));
-                    break;
-                }
-              },
+      appBar: _buildAppBar(),
+      body: _buildBody(),
+      bottomNavigationBar: _buildBottomNavigationBar(),
+      backgroundColor: Color(0xFF15aea2),
+    );
+  }
+
+  AppBar _buildAppBar() {
+    return AppBar(
+      title: Text('Home', style: TextStyle(color: Colors.black)),
+      backgroundColor: Color(0xFFfff7e8),
+      elevation: 0,
+    );
+  }
+
+  Widget _buildBody() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildCostCard(),
+            SizedBox(height: 16),
+            _buildMotivationalText(),
+            SizedBox(height: 16),
+            Text(
+              'Data Penggunaan Energi',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
             ),
-          ),
+            SizedBox(height: 16),
+            _buildInfoRow('Power', power, 'Current', current),
+            SizedBox(height: 16),
+            _buildInfoRow('Voltase', voltase, 'Energy', energy),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildCostCard() {
-    List<String> energyParts = energy.split(' ');
-    double energyValue = 0.0;
-
-    if (energyParts.length > 1) {
-      energyValue = double.tryParse(energyParts[1]) ?? 0.0;
-    }
-
+    double energyValue = double.tryParse(energy.split(' ').first) ?? 0.0;
     bool isLowEnergy = energyValue < 0.50;
 
-    return SizedBox(
-      width: 350,
-      child: Card(
-        color: Color(0xFFfff7e8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+    return Card(
+      color: Color(0xFFfff7e8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Energy bulan ini', style: _boldTextStyle()),
+            SizedBox(height: 8),
+            Text(energy, style: _largeTextStyle()),
+            if (isLowEnergy) ...[
+              SizedBox(height: 16),
               Text(
-                'Energy bulan ini',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+                'Perkiraan biaya bulan ini: Rp. ${energyValue * 1160}',
+                style: TextStyle(fontSize: 16, color: Colors.black),
               ),
-              SizedBox(height: 8),
-              Text(
-                energy,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
-              ),
-              if (isLowEnergy) ...[
-                SizedBox(height: 16),
-                Text(
-                  'Perkiraan biaya bulan ini: Rp. ${energyValue * 1.160} Kw/h',
-                  style: TextStyle(fontSize: 16, color: Colors.black),
-                ),
-              ],
             ],
-          ),
+          ],
         ),
       ),
     );
@@ -238,46 +144,92 @@ class _HomePageState extends State<HomePage> {
         Expanded(
           child: Text(
             'Pengeluaran kamu belum tinggi\nTerus Pantau Penggunaan Listrik Kamu.',
-            style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
+            style: _boldTextStyle(),
           ),
         ),
         SizedBox(width: 20),
         Image.asset(
           'assets/coffe_woman.png',
           height: 240,
+          errorBuilder: (context, error, stackTrace) {
+            return Icon(Icons.error, size: 100, color: Colors.red);
+          },
         ),
       ],
     );
   }
 
-  Widget _buildInfoCard(String title, String period, String calculation) {
+  Widget _buildInfoRow(String title1, String data1, String title2, String data2) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(child: _buildInfoCard(title1, 'Desember', data1)),
+        SizedBox(width: 8),
+        Expanded(child: _buildInfoCard(title2, 'Desember', data2)),
+      ],
+    );
+  }
+
+  Widget _buildInfoCard(String title, String period, String data) {
     return Card(
       color: Color(0xFFfff7e8),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              title,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
-            ),
-            SizedBox(height: 10),
-            Text(
-              period,
-              style: TextStyle(fontSize: 16, color: Colors.black),
-            ),
-            SizedBox(height: 10),
-            Text(
-              calculation,
-              style: TextStyle(fontSize: 16, color: Colors.black),
-            ),
+            Text(title, style: _boldTextStyle()),
+            SizedBox(height: 8),
+            Text(period, style: _mediumTextStyle()),
+            SizedBox(height: 8),
+            Text(data, style: _mediumTextStyle()),
           ],
         ),
       ),
     );
+  }
+
+  BottomNavigationBar _buildBottomNavigationBar() {
+    return BottomNavigationBar(
+      items: [
+        BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Riwayat'),
+        BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Kontrol'),
+        BottomNavigationBarItem(icon: Icon(Icons.info), label: 'Informasi'),
+      ],
+      selectedItemColor: Color(0xFF3a7b7e),
+      unselectedItemColor: Color(0xFF3a7b7e),
+      backgroundColor: Color(0xFFfff7e8),
+      onTap: _onNavigationItemTapped,
+    );
+  }
+
+  void _onNavigationItemTapped(int index) {
+    Widget page;
+    switch (index) {
+      case 0:
+        page = RiwayatPage();
+        break;
+      case 1:
+        page = KontrolPage();
+        break;
+      case 2:
+        page = InformasiPage();
+        break;
+      default:
+        return;
+    }
+    Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+  }
+
+  TextStyle _boldTextStyle() {
+    return TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black);
+  }
+
+  TextStyle _largeTextStyle() {
+    return TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black);
+  }
+
+  TextStyle _mediumTextStyle() {
+    return TextStyle(fontSize: 16, color: Colors.black);
   }
 }

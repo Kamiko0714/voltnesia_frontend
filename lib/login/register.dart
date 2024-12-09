@@ -60,28 +60,49 @@ class _RegisterPageState extends State<RegisterPage> {
       );
 
       // Periksa respons dari backend
-      if (response.statusCode == 201) {
+      if (response.statusCode == 201 &&
+          response.data["message"] == "User berhasil dibuat") {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Registrasi berhasil!')),
         );
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => HomePage()),
+          MaterialPageRoute(builder: (context) => LoginPage()),
         );
-      } else if (response.statusCode == 400) {
+      } else if ("username" == null || "email" == null || "password" == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Registrasi gagal: Data yang dimasukkan tidak valid.')),
+          SnackBar(
+              content: Text(
+                  'Registrasi gagal: Data yang dimasukkan tidak boleh kosong.')),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Registrasi gagal: ${response.data["message"] ?? "Terjadi kesalahan"}')),
+          SnackBar(
+              content: Text(
+                  'Registrasi gagal: ${response.data["message"] ?? "Terjadi kesalahan"}')),
         );
       }
     } catch (e) {
+      if (e is DioException) {
+        if (e.response?.statusCode == 400 &&
+            e.response?.data["message"] ==
+                "Username atau email sudah dipakai") {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(
+                    'Registrasi gagal: Data yang dimasukkan tidak valid.')),
+          );
+        }
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Terjadi kesalahan: $e')),
       );
     }
+
+    // Jika semua validasi lolos, lanjutkan ke halaman berikutnya
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => HomePage()));
   }
 
   @override
@@ -135,7 +156,8 @@ class _RegisterPageState extends State<RegisterPage> {
                       onTap: () {
                         // Navigasi ke halaman syarat dan ketentuan
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Tampilkan Syarat dan Ketentuan')),
+                          SnackBar(
+                              content: Text('Tampilkan Syarat dan Ketentuan')),
                         );
                       },
                       child: Text(
