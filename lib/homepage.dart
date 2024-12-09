@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'profile.dart';
 import 'riwayat.dart';
 import 'kontrol.dart';
@@ -13,6 +14,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final Dio _dio = Dio();
   final String espId = "voltnesia2k24";
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   String current = "Loading...";
   String power = "Loading...";
@@ -22,46 +25,61 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    _initializeNotifications();
     _fetchEnergyData();
   }
 
-  Future<void> _fetchEnergyData() async {
-  try {
-    final response = await _dio.get(
-      "http://voltnesia.msibiot.com:8000/devices",
-      queryParameters: {"esp_id": espId},
-      options: Options(
-        headers: {
-          "Authorization": "Bearer Gix2nFQ1U12Z5Sh7ZvZsnUrAyn3Cku4lIufYBlxzr5eWDw9WdOHXBcFFwVEm36uC",
-        },
-      ),
-    );
+  Future<void> _initializeNotifications() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('app_icon');
+    final InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
 
-    if (response.statusCode == 200) {
-      final data = response.data;
-      var deviceData = data['devices'].firstWhere(
-        (device) => device['id_esp'] == espId && device['device_type'] == 'pzem',
-        orElse: () => null,
+  Future<void> _fetchEnergyData() async {
+    try {
+      final response = await _dio.get(
+        "http://voltnesia.msibiot.com:8000/devices",
+        queryParameters: {"esp_id": espId},
+        options: Options(
+          headers: {
+            "Authorization": "Bearer Gix2nFQ1U12Z5Sh7ZvZsnUrAyn3Cku4lIufYBlxzr5eWDw9WdOHXBcFFwVEm36uC",
+          },
+        ),
       );
 
-      if (deviceData != null) {
-        setState(() {
-          current = "${deviceData['current']} A";
-          power = "${deviceData['power']} W";
-          voltase = "${deviceData['voltase']} V";
-          energy = "${deviceData['energy']} KW/h";
-        });
+      if (response.statusCode == 200) {
+        final data = response.data;
+        var deviceData = data['devices'].firstWhere(
+          (device) => device['id_esp'] == espId && device['device_type'] == 'pzem',
+          orElse: () => null,
+        );
+
+        if (deviceData != null) {
+          setState(() {
+            current = "${deviceData['current']} A";
+            power = "${deviceData['power']} W";
+            voltase = "${deviceData['voltase']} V";
+            energy = "${deviceData['energy']} KW/h";
+          });
+
+          // Cek jika power lebih dari 1000 dan tampilkan notifikasi
+          double powerValue = double.tryParse(power.split(' ').first) ?? 0.0;
+          if (powerValue >= 1000) {
+            _showWarningNotification();
+          }
+        } else {
+          _setErrorState("Data not found");
+        }
       } else {
-        _setErrorState("Data not found");
+        _setErrorState("Failed to load data");
       }
-    } else {
-      _setErrorState("Failed to load data");
+    } catch (e) {
+      print("Error fetching data: $e");
+      _setErrorState("Error");
     }
-  } catch (e) {
-    print("Error fetching data: $e");
-    _setErrorState("Error");
   }
-}
 
   void _setErrorState(String message) {
     setState(() {
@@ -70,6 +88,26 @@ class _HomePageState extends State<HomePage> {
       voltase = message;
       energy = message;
     });
+  }
+
+  Future<void> _showWarningNotification() async {
+    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+      'energy_channel',
+      'Energy Alerts',
+      channelDescription: 'This channel is used for energy consumption alerts.',
+      importance: Importance.high,
+      priority: Priority.high,
+    );
+    const NotificationDetails notificationDetails = NotificationDetails(
+      android: androidDetails,
+    );
+
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      'Peringatan Penggunaan Energi Tinggi',
+      'Power penggunaan listrik melebihi batas aman (1000 W). Periksa perangkat Anda!',
+      notificationDetails,
+    );
   }
 
   @override
@@ -82,13 +120,28 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  AppBar _buildAppBar() {
-    return AppBar(
-      title: Text('Home', style: TextStyle(color: Colors.black)),
-      backgroundColor: Color(0xFFfff7e8),
-      elevation: 0,
-    );
-  }
+AppBar _buildAppBar() {
+  return AppBar(
+    title: TextButton(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.person, color: Colors.black),
+          SizedBox(width: 8), // Jarak antara ikon dan teks
+          Text('Profile', style: TextStyle(color: Colors.black)),
+        ],
+      ),
+      onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ProfilePage()),
+          );
+      },
+    ),
+    backgroundColor: Color(0xFFfff7e8),
+    elevation: 0,
+  );
+}
 
   Widget _buildBody() {
     return Padding(
@@ -221,20 +274,23 @@ class _HomePageState extends State<HomePage> {
         page = InformasiPage();
         break;
       default:
-        return;
+        page = HomePage();
     }
-    Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => page),
+    );
   }
 
   TextStyle _boldTextStyle() {
-    return TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black);
+    return TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black);
   }
 
   TextStyle _largeTextStyle() {
-    return TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black);
+    return TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.black);
   }
 
   TextStyle _mediumTextStyle() {
-    return TextStyle(fontSize: 16, color: Colors.black);
+    return TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: Colors.black);
   }
 }

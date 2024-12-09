@@ -3,6 +3,7 @@ import 'package:syncfusion_flutter_gauges/gauges.dart'; // Untuk Circular Gauge
 import 'package:fl_chart/fl_chart.dart'; // Untuk grafik frekuensi
 import 'dart:convert'; // Untuk jsonDecode
 import 'package:http/http.dart' as http; // Untuk HTTP request
+import 'package:flutter_local_notifications/flutter_local_notifications.dart'; // Import notifikasi
 
 class InformasiPage extends StatefulWidget {
   @override
@@ -14,11 +15,19 @@ class _InformasiPageState extends State<InformasiPage> {
   double kondisi = 0.0; // Data untuk kondisi
   List<double> frekuensi = []; // Data frekuensi
   bool isLoading = true; // Indikator loading
+  late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
   @override
   void initState() {
     super.initState();
     fetchData(); // Panggil fungsi untuk mengambil data dari API
+
+    // Inisialisasi notifikasi
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    var androidInitialization = AndroidInitializationSettings('app_icon');
+    var initializationSettings =
+        InitializationSettings(android: androidInitialization);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
   // Fungsi untuk mengambil data dari API
@@ -45,6 +54,11 @@ class _InformasiPageState extends State<InformasiPage> {
               .map((device) => device['frekuensi'].toDouble())
               .toList();
           isLoading = false; // Selesai memuat data
+
+          // Cek suhu dan tampilkan notifikasi jika suhu mencapai 50
+          if (suhu >= 50.0) {
+            _showNotification();
+          }
         });
       } else {
         throw Exception('Failed to load data');
@@ -55,6 +69,25 @@ class _InformasiPageState extends State<InformasiPage> {
         isLoading = false; // Set loading ke false jika terjadi error
       });
     }
+  }
+
+  // Fungsi untuk menampilkan notifikasi
+  Future<void> _showNotification() async {
+    var androidDetails = AndroidNotificationDetails(
+      'channel_id', 
+      'channel_name', 
+      channelDescription: 'Channel untuk peringatan suhu',
+      importance: Importance.high,
+      priority: Priority.high,
+    );
+    var platformDetails = NotificationDetails(android: androidDetails);
+
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      'Peringatan Suhu Tinggi!',
+      'Suhu perangkat telah mencapai $suhu °C, periksa perangkat segera.',
+      platformDetails,
+    );
   }
 
   @override
@@ -244,7 +277,11 @@ class _InformasiPageState extends State<InformasiPage> {
         SizedBox(height: 8),
         Text(
           title,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
         ),
       ],
     );
