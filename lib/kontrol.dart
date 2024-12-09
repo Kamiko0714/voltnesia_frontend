@@ -15,6 +15,7 @@ class _KontrolScreenState extends State<KontrolPage> {
 
   // Ganti dengan URL endpoint API Anda
   final String _apiUrl = "http://voltnesia.msibiot.com:8000/update-device"; // Ubah sesuai URL API Anda
+  final String _apiToken = "Gix2nFQ1U12Z5Sh7ZvZsnUrAyn3Cku4lIufYBlxzr5eWDw9WdOHXBcFFwVEm36uC"; // Token API
 
   // Fungsi untuk mengirim data ke API
   Future<void> _updateLampStatus(bool status) async {
@@ -26,7 +27,12 @@ class _KontrolScreenState extends State<KontrolPage> {
           'device_id': 'relay-2',
           'device_newdata': {'status': status},
         },
-        options: Options(headers: {'Content-Type': 'application/json'}),
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $_apiToken', // Menambahkan token ke header
+          },
+        ),
       );
       if (response.statusCode == 200) {
         print('Status lampu berhasil diperbarui: $status');

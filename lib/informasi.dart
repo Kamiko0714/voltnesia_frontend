@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart'; // Untuk Circular Gauge
 import 'package:fl_chart/fl_chart.dart'; // Untuk grafik frekuensi
-import 'package:dio/dio.dart'; // Untuk HTTP Request
+import 'dart:convert'; // Untuk jsonDecode
+import 'package:http/http.dart' as http; // Untuk HTTP request
 
 class InformasiPage extends StatefulWidget {
   @override
@@ -9,38 +10,49 @@ class InformasiPage extends StatefulWidget {
 }
 
 class _InformasiPageState extends State<InformasiPage> {
-  // Data statis untuk suhu, kondisi, dan frekuensi
   double suhu = 0.0; // Data untuk suhu
   double kondisi = 0.0; // Data untuk kondisi
   List<double> frekuensi = []; // Data frekuensi
-
-  final Dio _dio = Dio(); // Objek Dio untuk HTTP request
-  String espId = "voltnesia2k24";
   bool isLoading = true; // Indikator loading
 
   @override
   void initState() {
     super.initState();
-    fetchData(); // Panggil fungsi untuk mengambil data API
+    fetchData(); // Panggil fungsi untuk mengambil data dari API
   }
 
   // Fungsi untuk mengambil data dari API
   Future<void> fetchData() async {
+    const apiUrl = 'http://voltnesia.msibiot.com:8000/devices?esp_id=voltnesia2k24';
+    const token = 'Gix2nFQ1U12Z5Sh7ZvZsnUrAyn3Cku4lIufYBlxzr5eWDw9WdOHXBcFFwVEm36uC';
+
     try {
-      final response = await _dio.get(
-        "http://voltnesia.msibiot.com:8000/devices",
-        queryParameters: {"esp_id": espId},
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {'Authorization': 'Bearer $token'},
       );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final devices = data['devices'];
+
+        // Mencari suhu dan frekuensi dalam response JSON
+        setState(() {
+          suhu = devices.firstWhere((device) => device['device_type'] == 'dht')['temp'];
+          kondisi = 100.0; // Misalnya kondisi diatur ke nilai statis 100% (boleh diganti dengan data lain)
+          frekuensi = devices
+              .where((device) => device['device_type'] == 'pzem')
+              .map((device) => device['frekuensi'].toDouble())
+              .toList();
+          isLoading = false; // Selesai memuat data
+        });
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (error) {
+      print('Error fetching data: $error');
       setState(() {
-        suhu = response.data['suhu'] ?? 0.0;
-        kondisi = response.data['kondisi'] ?? 0.0;
-        frekuensi = List<double>.from(response.data['frekuensi'] ?? []);
-        isLoading = false;
-      });
-    } catch (e) {
-      print('Error fetching data: $e');
-      setState(() {
-        isLoading = false;
+        isLoading = false; // Set loading ke false jika terjadi error
       });
     }
   }
@@ -59,68 +71,68 @@ class _InformasiPageState extends State<InformasiPage> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator()) // Tampilkan loading
-          : SingleChildScrollView(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Kondisi Perangkat
+            Container(
+              color: Color(0xFFfff7e8),
+              padding: EdgeInsets.all(16),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Kondisi Perangkat
-                  Container(
-                    color: Color(0xFFfff7e8),
-                    padding: EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'KONDISI PERANGKAT PINTAR',
-                          style: TextStyle(
-                            color: Color(0xFFFF15aea2),
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            _buildGauge(
-                              title: "Suhu",
-                              value: suhu,
-                              unit: "°C",
-                              min: 0,
-                              max: 100,
-                              color: Colors.blueAccent,
-                            ),
-                            _buildGauge(
-                              title: "Kondisi",
-                              value: kondisi,
-                              unit: "%",
-                              min: 0,
-                              max: 100,
-                              color: Colors.green,
-                            ),
-                          ],
-                        ),
-                      ],
+                  Text(
+                    'KONDISI PERANGKAT PINTAR',
+                    style: TextStyle(
+                      color: Color(0xFFFF15aea2),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   SizedBox(height: 16),
-                  // Grafik Frekuensi
-                  Container(
-                    color: Color(0xFFfff7e8),
-                    padding: EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'FREKUENSI',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 16),
-                        Container(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildGauge(
+                        title: "Suhu",
+                        value: suhu,
+                        unit: "°C",
+                        min: 0,
+                        max: 100,
+                        color: Colors.blueAccent,
+                      ),
+                      _buildGauge(
+                        title: "Kondisi",
+                        value: kondisi,
+                        unit: "%",
+                        min: 0,
+                        max: 100,
+                        color: Colors.green,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 16),
+            // Grafik Frekuensi
+            Container(
+              color: Color(0xFFfff7e8),
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'FREKUENSI',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  isLoading
+                      ? CircularProgressIndicator()
+                      : Container(
                           height: 200,
                           padding: EdgeInsets.symmetric(horizontal: 8),
                           decoration: BoxDecoration(
@@ -170,12 +182,12 @@ class _InformasiPageState extends State<InformasiPage> {
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ),
+          ],
+        ),
+      ),
     );
   }
 

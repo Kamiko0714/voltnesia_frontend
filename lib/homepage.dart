@@ -26,37 +26,42 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _fetchEnergyData() async {
-    try {
-      final response = await _dio.get(
-        "http://voltnesia.msibiot.com:8000/devices",
-        queryParameters: {"esp_id": espId},
+  try {
+    final response = await _dio.get(
+      "http://voltnesia.msibiot.com:8000/devices",
+      queryParameters: {"esp_id": espId},
+      options: Options(
+        headers: {
+          "Authorization": "Bearer Gix2nFQ1U12Z5Sh7ZvZsnUrAyn3Cku4lIufYBlxzr5eWDw9WdOHXBcFFwVEm36uC",
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      final data = response.data;
+      var deviceData = data['devices'].firstWhere(
+        (device) => device['id_esp'] == espId && device['device_type'] == 'pzem',
+        orElse: () => null,
       );
 
-      if (response.statusCode == 200) {
-        final data = response.data;
-        var deviceData = data['devices'].firstWhere(
-          (device) => device['id_esp'] == espId && device['device_type'] == 'pzem',
-          orElse: () => null,
-        );
-
-        if (deviceData != null) {
-          setState(() {
-            current = "${deviceData['current']} A";
-            power = "${deviceData['power']} W";
-            voltase = "${deviceData['voltase']} V";
-            energy = "${deviceData['energy']} KW/h";
-          });
-        } else {
-          _setErrorState("Data not found");
-        }
+      if (deviceData != null) {
+        setState(() {
+          current = "${deviceData['current']} A";
+          power = "${deviceData['power']} W";
+          voltase = "${deviceData['voltase']} V";
+          energy = "${deviceData['energy']} KW/h";
+        });
       } else {
-        _setErrorState("Failed to load data");
+        _setErrorState("Data not found");
       }
-    } catch (e) {
-      print("Error fetching data: $e");
-      _setErrorState("Error");
+    } else {
+      _setErrorState("Failed to load data");
     }
+  } catch (e) {
+    print("Error fetching data: $e");
+    _setErrorState("Error");
   }
+}
 
   void _setErrorState(String message) {
     setState(() {
