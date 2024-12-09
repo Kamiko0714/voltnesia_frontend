@@ -11,48 +11,67 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  // Dio instance
+  final Dio _dio = Dio();
+
+  // ESP ID (sesuaikan sesuai kebutuhan)
+  String espId = "voltnesia2k24";
+
+  // Data API
   String current = "Loading...";
   String power = "Loading...";
   String voltase = "Loading...";
   String energy = "Loading...";
-  final String espId = "voltnesia2k24";
 
   @override
   void initState() {
     super.initState();
-    fetchDeviceData();
+    _fetchEnergyData(); // Fetch data saat widget diinisialisasi
   }
 
-  Future<void> fetchDeviceData() async {
-    final Dio dio = Dio();
-    final String apiUrl = "http://voltnesia.msibiot.com:8000/devices?esp_id=$espId";
-
-    print("Fetching data from API: $apiUrl");
-
+  // Fungsi untuk fetch data dari API
+  Future<void> _fetchEnergyData() async {
     try {
-      final Response response = await dio.get(apiUrl);
-      print("Response status: ${response.statusCode}");
-      print("Response data: ${response.data}");
+      final response = await _dio.get(
+        "http://voltnesia.msibiot.com:8000/devices",
+        queryParameters: {"esp_id": espId},
+      );
 
-      if (response.statusCode == 200 && response.data != null) {
-        setState(() {
-          current = "${response.data['current']} A/jam";
-          power = "${response.data['power']} W/jam";
-          voltase = "${response.data['voltase']} V/jam";
-          energy = "Rp. ${response.data['energy']} KW/h";
-        });
+      if (response.statusCode == 200) {
+        final data = response.data;
+
+        // Ambil data dari list "devices" berdasarkan id yang sesuai
+        var deviceData = data['devices'].firstWhere(
+          (device) => device['id_esp'] == espId && device['device_type'] == 'pzem',
+          orElse: () => null,
+        );
+
+        if (deviceData != null) {
+          setState(() {
+            current = "${deviceData['current']} A";
+            power = "${deviceData['power']} W";
+            voltase = "${deviceData['voltase']} V";
+            energy = "${deviceData['energy']} KW/h";
+          });
+        } else {
+          setState(() {
+            current = "Data not found";
+            power = "Data not found";
+            voltase = "Data not found";
+            energy = "Data not found";
+          });
+        }
       } else {
-        setState(() {
-          current = power = voltase = energy = "Data tidak tersedia";
-        });
-        print("Unexpected response format: ${response.data}");
+        throw Exception('Failed to load data');
       }
-    } catch (error, stackTrace) {
+    } catch (e) {
+      print("Error fetching data: $e");
       setState(() {
-        current = power = voltase = energy = "Error memuat data";
+        current = "Error";
+        power = "Error";
+        voltase = "Error";
+        energy = "Error";
       });
-      print("Error fetching data: $error");
-      print("StackTrace: $stackTrace");
     }
   }
 
@@ -65,7 +84,8 @@ class _HomePageState extends State<HomePage> {
           builder: (context) {
             return TextButton(
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage()));
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => ProfilePage()));
               },
               child: Text(
                 'Profile',
@@ -147,13 +167,16 @@ class _HomePageState extends State<HomePage> {
               onTap: (index) {
                 switch (index) {
                   case 0:
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => RiwayatPage()));
+                    Navigator.push(
+                        context, MaterialPageRoute(builder: (context) => RiwayatPage()));
                     break;
                   case 1:
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => KontrolPage()));
+                    Navigator.push(
+                        context, MaterialPageRoute(builder: (context) => KontrolPage()));
                     break;
                   case 2:
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => InformasiPage()));
+                    Navigator.push(
+                        context, MaterialPageRoute(builder: (context) => InformasiPage()));
                     break;
                 }
               },

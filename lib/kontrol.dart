@@ -14,14 +14,18 @@ class _KontrolScreenState extends State<KontrolPage> {
   Dio _dio = Dio();
 
   // Ganti dengan URL endpoint API Anda
-  final String _apiUrl = "https://your-api-url.com/api/lamp"; // Ubah sesuai URL API Anda
+  final String _apiUrl = "http://voltnesia.msibiot.com:8000/update-device"; // Ubah sesuai URL API Anda
 
   // Fungsi untuk mengirim data ke API
   Future<void> _updateLampStatus(bool status) async {
     try {
       final response = await _dio.post(
         _apiUrl,
-        data: {'lamp_status': status},
+        data: {
+          'esp_id': 'voltnesia2k24',
+          'device_id': 'relay-2',
+          'device_newdata': {'status': status},
+        },
         options: Options(headers: {'Content-Type': 'application/json'}),
       );
       if (response.statusCode == 200) {
@@ -37,10 +41,10 @@ class _KontrolScreenState extends State<KontrolPage> {
   // Fungsi untuk toggle lamp dan memperbarui API
   void _toggleLamp() async {
     setState(() {
-      _isLampOn = !_isLampOn;
+      _isLampOn = !_isLampOn; // Toggle status lampu
     });
 
-    await _updateLampStatus(_isLampOn);
+    await _updateLampStatus(_isLampOn); // Kirim status terbaru ke API
   }
 
   // Fungsi untuk toggle fitur lainnya

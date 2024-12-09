@@ -10,6 +10,8 @@ class RiwayatPage extends StatefulWidget {
 class _RiwayatPageState extends State<RiwayatPage> {
   List<double> barChartData = [150, 120, 180, 90]; // Data statis untuk grafik
   List<Map<String, String>> usageData = []; // Data akan diambil dari API
+  String espId = "voltnesia2k24";
+  final Dio _dio = Dio();
   
   @override
   void initState() {
@@ -19,7 +21,10 @@ class _RiwayatPageState extends State<RiwayatPage> {
 
   Future<void> fetchDataFromAPI() async {
     try {
-      var response = await Dio().get('https://your-api-endpoint.com/usage-data');
+      final response = await _dio.get(
+        "http://voltnesia.msibiot.com:8000/devices",
+        queryParameters: {"esp_id": espId},
+      );
       
       // Parse the response and update the usageData list
       List<Map<String, String>> data = List<Map<String, String>>.from(

@@ -15,6 +15,7 @@ class _InformasiPageState extends State<InformasiPage> {
   List<double> frekuensi = []; // Data frekuensi
 
   final Dio _dio = Dio(); // Objek Dio untuk HTTP request
+  String espId = "voltnesia2k24";
   bool isLoading = true; // Indikator loading
 
   @override
@@ -26,7 +27,10 @@ class _InformasiPageState extends State<InformasiPage> {
   // Fungsi untuk mengambil data dari API
   Future<void> fetchData() async {
     try {
-      final response = await _dio.get('https://api.example.com/device-info');
+      final response = await _dio.get(
+        "http://voltnesia.msibiot.com:8000/devices",
+        queryParameters: {"esp_id": espId},
+      );
       setState(() {
         suhu = response.data['suhu'] ?? 0.0;
         kondisi = response.data['kondisi'] ?? 0.0;
