@@ -3,7 +3,9 @@ import 'package:syncfusion_flutter_gauges/gauges.dart'; // Untuk Circular Gauge
 import 'package:fl_chart/fl_chart.dart'; // Untuk grafik frekuensi
 import 'dart:convert'; // Untuk jsonDecode
 import 'package:http/http.dart' as http; // Untuk HTTP request
-import 'package:flutter_local_notifications/flutter_local_notifications.dart'; // Import notifikasi
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+import 'homepage.dart'; // Import notifikasi
 
 class InformasiPage extends StatefulWidget {
   @override
@@ -95,14 +97,15 @@ class _InformasiPageState extends State<InformasiPage> {
     return Scaffold(
       backgroundColor: Color(0xFF15aea2), // Warna latar belakang halaman
       appBar: AppBar(
+        automaticallyImplyLeading: false, // Menghilangkan tombol back
         title: Text('INFO PERANGKAT'),
+        // leading: IconButton(
+        //   icon: Icon(Icons.arrow_back),
+        //   onPressed: () => Navigator.pop(context),
+        // ),
         backgroundColor: Color(0xFFFF15aea2),
-        elevation: 0,
         foregroundColor: Colors.black,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
+        elevation: 0,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -220,6 +223,28 @@ class _InformasiPageState extends State<InformasiPage> {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.info),
+            label: 'Informasi',
+          ),
+        ],
+        selectedItemColor: Colors.indigo.shade900,
+        unselectedItemColor: Colors.grey,
+        onTap: (index) {
+          if (index == 0) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomePage()),
+            );
+          }
+        },
       ),
     );
   }

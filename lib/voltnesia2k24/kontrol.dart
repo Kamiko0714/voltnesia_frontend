@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 
+import 'homepage.dart';
+
 class KontrolPage extends StatefulWidget {
   @override
   _KontrolScreenState createState() => _KontrolScreenState();
@@ -77,8 +79,16 @@ class _KontrolScreenState extends State<KontrolPage> {
     return Scaffold(
       backgroundColor: Color(0xFFfff7e8),
       appBar: AppBar(
-        title: Text('Kontrol Lampu'),
-        backgroundColor: Color(0xFFfff7e8),
+        automaticallyImplyLeading: false, // Menghilangkan tombol back
+        title: Text(
+          'Kontrol Lampu',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        backgroundColor: Color(0xFF15aea2),
+        elevation: 0,
       ),
       body: Container(
         color: Color(0xFFfff7e8),
@@ -213,6 +223,28 @@ class _KontrolScreenState extends State<KontrolPage> {
             ),
           ),
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.control_camera),
+            label: 'Kontrol',
+          ),
+        ],
+        selectedItemColor: Colors.indigo.shade900,
+        unselectedItemColor: Colors.grey,
+        onTap: (index) {
+          if (index == 0) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomePage()),
+            );
+          }
+        },
       ),
     );
   }

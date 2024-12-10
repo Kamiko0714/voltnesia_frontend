@@ -25,17 +25,17 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // _initializeNotifications();
+    _initializeNotifications();
     _fetchEnergyData();
   }
 
-  // Future<void> _initializeNotifications() async {
-  //   const AndroidInitializationSettings initializationSettingsAndroid =
-  //       AndroidInitializationSettings('app_icon');
-  //   final InitializationSettings initializationSettings =
-  //       InitializationSettings(android: initializationSettingsAndroid);
-  //   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-  // }
+  Future<void> _initializeNotifications() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('app_icon');
+    final InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
 
   Future<void> _fetchEnergyData() async {
     try {
@@ -122,6 +122,7 @@ class _HomePageState extends State<HomePage> {
 
 AppBar _buildAppBar() {
   return AppBar(
+    automaticallyImplyLeading: false, // Menyembunyikan tombol back
     title: TextButton(
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -132,16 +133,17 @@ AppBar _buildAppBar() {
         ],
       ),
       onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ProfilePage()),
-          );
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ProfilePage()),
+        );
       },
     ),
     backgroundColor: Color(0xFFfff7e8),
     elevation: 0,
   );
 }
+
 
   Widget _buildBody() {
     return Padding(
@@ -196,50 +198,26 @@ AppBar _buildAppBar() {
     );
   }
 
-Widget _buildMotivationalText() {
-  return Row(
-    children: [
-      Expanded(
-        child: Stack(
-          clipBehavior: Clip.none, // Agar ekor dapat muncul di luar bubble
-          children: [
-            Container(
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Color(0xFFfff7e8),
-                borderRadius: BorderRadius.circular(10), // Membuat sudut melengkung
-              ),
-              child: Text(
-                'Pengeluaran kamu belum tinggi\nTerus Pantau Penggunaan Listrik Kamu.',
-                style: _boldTextStyle(),
-              ),
-            ),
-            Positioned(
-              top: 10, // Menempatkan ekor di tengah vertikal bubble
-              right: -10, // Menempatkan ekor di luar bubble ke kanan
-              child: Transform.rotate(
-                angle: 3.14159 / 4, // Rotasi 45 derajat untuk membuat segitiga mengarah ke kanan
-                child: Container(
-                  width: 15,
-                  height: 15,
-                  color: Color(0xFFfff7e8), // Warna sama dengan bubble
-                ),
-              ),
-            ),
-          ],
+  Widget _buildMotivationalText() {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            'Pengeluaran kamu belum tinggi\nTerus Pantau Penggunaan Listrik Kamu.',
+            style: _boldTextStyle(),
+          ),
         ),
-      ),
-      SizedBox(width: 20),
-      Image.asset(
-        'assets/coffe_woman.png',
-        height: 240,
-        errorBuilder: (context, error, stackTrace) {
-          return Icon(Icons.error, size: 100, color: Colors.red);
-        },
-      ),
-    ],
-  );
-} 
+        SizedBox(width: 20),
+        Image.asset(
+          'assets/coffe_woman.png',
+          height: 240,
+          errorBuilder: (context, error, stackTrace) {
+            return Icon(Icons.error, size: 100, color: Colors.red);
+          },
+        ),
+      ],
+    );
+  }
 
   Widget _buildInfoRow(String title1, String data1, String title2, String data2) {
     return Row(
