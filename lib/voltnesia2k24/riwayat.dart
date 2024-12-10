@@ -212,7 +212,7 @@ class _RiwayatPageState extends State<RiwayatPage> {
             Text(
               'BULAN: $bulan',
               style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 6,
                   fontWeight: FontWeight.bold,
                   color: Colors.indigo.shade900),
             ),

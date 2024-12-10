@@ -13,8 +13,7 @@ class Selection extends StatelessWidget {
         children: [
           ListTile(
             leading: Icon(Icons.folder),
-            title: Text('Folder: testing'),
-            subtitle: Text('File: homepage.dart'),
+            title: Text('ESP ID : testing'),
             onTap: () {
               Navigator.push(
                 context,
@@ -24,8 +23,7 @@ class Selection extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(Icons.folder),
-            title: Text('Folder: voltnesia2k24'),
-            subtitle: Text('File: homepage.dart'),
+            title: Text('ESP ID : voltnesia2k24'),
             onTap: () {
               Navigator.push(
                 context,
