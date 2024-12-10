@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'profile.dart';
 import 'riwayat.dart';
@@ -12,81 +11,34 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final Dio _dio = Dio();
-  final String espId = "voltnesia2k24";
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
-  String current = "Loading...";
-  String power = "Loading...";
-  String voltase = "Loading...";
-  String energy = "Loading...";
+  String current = "10 A"; // Simulasi data
+  String power = "950 W"; // Simulasi data
+  String voltase = "220 V"; // Simulasi data
+  String energy = "0.45 KW/h"; // Simulasi data
 
   @override
   void initState() {
     super.initState();
-    _initializeNotifications();
-    _fetchEnergyData();
+    // _initializeNotifications();
+    _loadLocalEnergyData(); // Mengambil data lokal
   }
 
-  Future<void> _initializeNotifications() async {
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('app_icon');
-    final InitializationSettings initializationSettings =
-        InitializationSettings(android: initializationSettingsAndroid);
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-  }
-
-  Future<void> _fetchEnergyData() async {
-    try {
-      final response = await _dio.get(
-        "http://voltnesia.msibiot.com:8000/devices",
-        queryParameters: {"esp_id": espId},
-        options: Options(
-          headers: {
-            "Authorization": "Bearer Gix2nFQ1U12Z5Sh7ZvZsnUrAyn3Cku4lIufYBlxzr5eWDw9WdOHXBcFFwVEm36uC",
-          },
-        ),
-      );
-
-      if (response.statusCode == 200) {
-        final data = response.data;
-        var deviceData = data['devices'].firstWhere(
-          (device) => device['id_esp'] == espId && device['device_type'] == 'pzem',
-          orElse: () => null,
-        );
-
-        if (deviceData != null) {
-          setState(() {
-            current = "${deviceData['current']} A";
-            power = "${deviceData['power']} W";
-            voltase = "${deviceData['voltase']} V";
-            energy = "${deviceData['energy']} KW/h";
-          });
-
-          // Cek jika power lebih dari 1000 dan tampilkan notifikasi
-          double powerValue = double.tryParse(power.split(' ').first) ?? 0.0;
-          if (powerValue >= 1000) {
-            _showWarningNotification();
-          }
-        } else {
-          _setErrorState("Data not found");
-        }
-      } else {
-        _setErrorState("Failed to load data");
-      }
-    } catch (e) {
-      print("Error fetching data: $e");
-      _setErrorState("Error");
-    }
-  }
-
-  void _setErrorState(String message) {
+  Future<void> _loadLocalEnergyData() async {
+    // Data simulasi untuk pengujian lokal
     setState(() {
-      current = message;
-      power = message;
-      voltase = message;
-      energy = message;
+      current = "10 A";
+      power = "950 W";
+      voltase = "220 V";
+      energy = "0.45 KW/h";
+
+      // Jika power lebih dari 1000 W, tampilkan notifikasi
+      double powerValue = double.tryParse(power.split(' ').first) ?? 0.0;
+      if (powerValue >= 1000) {
+        _showWarningNotification();
+      }
     });
   }
 
@@ -120,28 +72,28 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-AppBar _buildAppBar() {
-  return AppBar(
-    title: TextButton(
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.person, color: Colors.black),
-          SizedBox(width: 8), // Jarak antara ikon dan teks
-          Text('Profile', style: TextStyle(color: Colors.black)),
-        ],
-      ),
-      onPressed: () {
+  AppBar _buildAppBar() {
+    return AppBar(
+      title: TextButton(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.person, color: Colors.black),
+            SizedBox(width: 8),
+            Text('Profile', style: TextStyle(color: Colors.black)),
+          ],
+        ),
+        onPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => ProfilePage()),
           );
-      },
-    ),
-    backgroundColor: Color(0xFFfff7e8),
-    elevation: 0,
-  );
-}
+        },
+      ),
+      backgroundColor: Color(0xFFfff7e8),
+      elevation: 0,
+    );
+  }
 
   Widget _buildBody() {
     return Padding(
@@ -200,9 +152,33 @@ AppBar _buildAppBar() {
     return Row(
       children: [
         Expanded(
-          child: Text(
-            'Pengeluaran kamu belum tinggi\nTerus Pantau Penggunaan Listrik Kamu.',
-            style: _boldTextStyle(),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Color(0xFFfff7e8),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  'Pengeluaran kamu belum tinggi\nTerus Pantau Penggunaan Listrik Kamu.',
+                  style: _boldTextStyle(),
+                ),
+              ),
+              Positioned(
+                top: 10,
+                right: -10,
+                child: Transform.rotate(
+                  angle: 3.14159 / 4,
+                  child: Container(
+                    width: 15,
+                    height: 15,
+                    color: Color(0xFFfff7e8),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         SizedBox(width: 20),

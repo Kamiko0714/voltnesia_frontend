@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart'; // Paket Dio untuk HTTP request
-import 'package:frontend/homepage.dart'; // Pastikan file HomePage sudah diimpor
+import 'package:frontend/voltnesia2k24/homepage.dart'; // Pastikan file HomePage sudah diimpor
 import 'package:frontend/login/login.dart'; // Untuk navigasi kembali ke halaman login
 
 class RegisterPage extends StatefulWidget {
