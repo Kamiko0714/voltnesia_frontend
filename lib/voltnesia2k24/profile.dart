@@ -142,7 +142,7 @@ class ProfilePage extends StatelessWidget {
   }
 
   void _launchURL() async {
-    const url = 'https://www.instagram.com/direct/t/17845946136345310';
+    const url = 'https://www.instagram.com/voltnesia_indobot';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
