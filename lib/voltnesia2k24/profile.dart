@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/login/firstpage.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'edit_profile.dart';
 import 'riwayat.dart';
@@ -107,7 +108,10 @@ class ProfilePage extends StatelessWidget {
                 minimumSize: Size(double.infinity, 50),
               ),
               onPressed: () {
-                // Aksi untuk keluar
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Firstpage()),
+                  );
               },
               child: Text('Keluar', style: TextStyle(fontSize: 18)),
             ),
@@ -138,7 +142,7 @@ class ProfilePage extends StatelessWidget {
   }
 
   void _launchURL() async {
-    const url = 'https://www.instagram.com/voltnesia_indobot?igsh=MWF5Z3BsYnZkZXp1eA==';
+    const url = 'https://www.instagram.com/direct/t/17845946136345310';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
