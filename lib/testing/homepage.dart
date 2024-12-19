@@ -78,9 +78,27 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
-      body: _buildBody(),
+      body: SafeArea(
+        child: Container(
+          color: Color(0xFF15aea2), // Warna latar belakang hijau
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildCostCard(),
+                  _buildMotivationalText(),
+                  SizedBox(height: 16),
+                  _buildEnergyUsageCard(), // Kartu "Data Penggunaan Energi"
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
       bottomNavigationBar: _buildBottomNavigationBar(),
-      backgroundColor: Color(0xFF15aea2),
+      backgroundColor: Color(0xFF15aea2), // Warna latar belakang hijau
     );
   }
 
@@ -107,70 +125,53 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildBody() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: SingleChildScrollView(
+  Widget _buildCostCard() {
+    double energyValue = double.tryParse(energy.split(' ').first) ?? 0.0;
+    bool isLowEnergy = energyValue < 0.50;
+
+    return Card(
+      color: Color(0xFFfff7e8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildCostCard(),
-            _buildMotivationalText(),
-            SizedBox(height: 16),
-            _buildEnergyUsageCard(), // Kartu "Data Penggunaan Energi"
+            Text('Energy bulan $bulan', style: _boldTextStyle()),
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: energy, // Teks energy
+                    style: _largeTextStyle().copyWith(color: Color(0xFF3a7b7e)), // Warna hijau
+                  ),
+                  TextSpan(
+                    text: ' KW/h', // Teks "KW/h"
+                    style: TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold), // Warna default (hitam)
+                  ),
+                ],
+              ),
+            ),
+            if (isLowEnergy)
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Perkiraan biaya bulan ini: Rp.',
+                      style: TextStyle(fontSize: 15, color: Colors.black, fontWeight: FontWeight.bold),
+                    ),
+                    TextSpan(
+                      text: '${energyValue * 1160}',
+                      style: TextStyle(fontSize: 20, color: Color(0xFF3a7b7e), fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ),
           ],
         ),
       ),
     );
   }
-
-Widget _buildCostCard() {
-  double energyValue = double.tryParse(energy.split(' ').first) ?? 0.0;
-  bool isLowEnergy = energyValue < 0.50;
-
-  return Card(
-    color: Color(0xFFfff7e8),
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-    child: Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Energy bulan $bulan', style: _boldTextStyle()),
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: energy, // Teks energy
-                  style: _largeTextStyle().copyWith(color: Color(0xFF3a7b7e)), // Warna hijau
-                ),
-                TextSpan(
-                  text: ' KW/h', // Teks "KW/h"
-                  style: TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold), // Warna default (hitam)
-                ),
-              ],
-            ),
-          ),
-          if (isLowEnergy)
-            RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Perkiraan biaya bulan ini: Rp.',
-                    style: TextStyle(fontSize: 15, color: Colors.black, fontWeight: FontWeight.bold),
-                  ),
-                  TextSpan(
-                    text: '${energyValue * 1160}',
-                    style: TextStyle(fontSize: 20, color: Color(0xFF3a7b7e), fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ),
-        ],
-      ),
-    ),
-  );
-}
 
   Widget _buildMotivationalText() {
     return Row(
@@ -234,27 +235,34 @@ Widget _buildCostCard() {
             ),
             SizedBox(height: 15),
             Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: _buildShadowBox(
-                  child: _buildEnergyDataRow('Arus', current, unit: 'Ampere'),
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: _buildShadowBox(
+                    child: _buildEnergyDataRow('Arus', current, unit: 'Ampere'),
+                  ),
                 ),
-              ),
-              SizedBox(width: 10), // Jarak antara shadow box
-              Expanded(
-                child: _buildShadowBox(
-                  child: _buildEnergyDataRow('Daya', power, unit: 'Watt'),
+                SizedBox(width: 10), // Jarak antara shadow box
+                Expanded(
+                  child: _buildShadowBox(
+                    child: _buildEnergyDataRow('Daya', power, unit: 'Watt'),
+                  ),
                 ),
-              ),
-              SizedBox(width: 10), // Jarak antara shadow box
-              Expanded(
-                child: _buildShadowBox(
-                  child: _buildEnergyDataRow('Tegangan', voltase, unit: 'Volt'),
+              ],
+            ),
+            SizedBox(height: 10), // Jarak antara baris pertama dan kedua
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 150, // Lebar statis
+                  height: 125, // Tinggi statis
+                  child: _buildShadowBox(
+                    child: _buildEnergyDataRow('Tegangan', voltase, unit: 'Volt'),
+                  ),
                 ),
-              ),
-            ],
-          )
+              ],
+            ),
           ],
         ),
       ),
