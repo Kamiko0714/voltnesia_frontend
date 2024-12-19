@@ -229,9 +229,23 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Data Penggunaan Energi Bulan $bulan', // Menambahkan variabel $bulan
-              style: _boldTextStyle(),
+            Center( // Memastikan konten berada di tengah secara horizontal
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center, // Rata tengah secara vertikal
+                crossAxisAlignment: CrossAxisAlignment.center, // Rata tengah secara horizontal
+                children: [
+                  Text(
+                    'Data Penggunaan Energi',
+                    style: _boldTextStyle(),
+                    textAlign: TextAlign.center, // Rata tengah teks
+                  ),
+                  Text(
+                    bulan,
+                    style: _bulanTextStyle(),
+                    textAlign: TextAlign.center, // Rata tengah teks
+                  ),
+                ],
+              ),
             ),
             SizedBox(height: 15),
             Row(
@@ -314,19 +328,33 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  BottomNavigationBar _buildBottomNavigationBar() {
-    return BottomNavigationBar(
-      items: [
-        BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Riwayat'),
-        BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Kontrol'),
-        BottomNavigationBarItem(icon: Icon(Icons.info), label: 'Informasi'),
-      ],
-      selectedItemColor: Color(0xFF3a7b7e),
-      unselectedItemColor: Color(0xFF3a7b7e),
-      backgroundColor: Color(0xFFfff7e8),
-      onTap: _onNavigationItemTapped,
-    );
-  }
+Widget _buildBottomNavigationBar() {
+  return ClipRRect(
+    borderRadius: BorderRadius.vertical(top: Radius.circular(20)), // Membuat sudut tumpul di atas
+    child: Container(
+      margin: EdgeInsets.symmetric(horizontal: 50), // Menambahkan margin di sisi kanan dan kiri
+      decoration: BoxDecoration(
+        color: Color(0xFFfff7e8), // Warna latar belakang
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)), // Sudut tumpul di atas
+      ),
+      constraints: BoxConstraints(
+        maxWidth: 300, // Membatasi lebar maksimum lebih kecil
+      ),
+      child: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Riwayat'),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Kontrol'),
+          BottomNavigationBarItem(icon: Icon(Icons.info), label: 'Informasi'),
+        ],
+        selectedItemColor: Color(0xFF3a7b7e),
+        unselectedItemColor: Color(0xFF3a7b7e),
+        backgroundColor: Colors.transparent, // Transparan agar dekorasi Container terlihat
+        onTap: _onNavigationItemTapped,
+        elevation: 0, // Menghilangkan bayangan bawaan
+      ),
+    ),
+  );
+}
 
   void _onNavigationItemTapped(int index) {
     Widget page;
@@ -363,6 +391,10 @@ class _HomePageState extends State<HomePage> {
 
   TextStyle _largeValueTextStyle() {
     return TextStyle(fontSize: 35, fontWeight: FontWeight.bold, color: Color(0xFF3a7b7e));
+  }
+
+  TextStyle _bulanTextStyle() {
+    return TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF3a7b7e));
   }
 
   TextStyle _smallUnitTextStyle() {

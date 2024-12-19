@@ -210,7 +210,7 @@ class _RiwayatPageState extends State<RiwayatPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'BULAN: $bulan',
+              '$bulan',
               style: TextStyle(
                   fontSize: 6,
                   fontWeight: FontWeight.bold,
