@@ -106,6 +106,8 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: InputDecoration(
                   labelText: 'Gmail/Email',
                   border: OutlineInputBorder(),
+                  filled: true, // Mengaktifkan pengisian latar belakang
+                  fillColor: Color(0xFFfff7e8), // Warna latar belakang
                 ),
               ),
               SizedBox(height: 10.0),
@@ -115,6 +117,8 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: InputDecoration(
                   labelText: 'Password',
                   border: OutlineInputBorder(),
+                  filled: true, // Mengaktifkan pengisian latar belakang
+                  fillColor: Color(0xFFfff7e8), // Warna latar belakang
                 ),
               ),
               SizedBox(height: 20.0),

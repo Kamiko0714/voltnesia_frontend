@@ -14,25 +14,26 @@ class _HomePageState extends State<HomePage> {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
-  String current = "10 A"; // Simulasi data
-  String power = "950 W"; // Simulasi data
-  String voltase = "220 V"; // Simulasi data
-  String energy = "0.45 KW/h"; // Simulasi data
+  String current = "10"; // Simulasi data
+  String power = "950"; // Simulasi data
+  String voltase = "220"; // Simulasi data
+  String energy = "0.45"; // Simulasi data
+  String bulan = ""; // Variabel bulan
 
   @override
   void initState() {
     super.initState();
-    // _initializeNotifications();
     _loadLocalEnergyData(); // Mengambil data lokal
+    _setCurrentMonth(); // Mengatur bulan saat ini
   }
 
   Future<void> _loadLocalEnergyData() async {
     // Data simulasi untuk pengujian lokal
     setState(() {
-      current = "10 A";
-      power = "950 W";
-      voltase = "220 V";
-      energy = "0.45 KW/h";
+      current = "10";
+      power = "950";
+      voltase = "220";
+      energy = "0.45";
 
       // Jika power lebih dari 1000 W, tampilkan notifikasi
       double powerValue = double.tryParse(power.split(' ').first) ?? 0.0;
@@ -60,6 +61,17 @@ class _HomePageState extends State<HomePage> {
       'Power penggunaan listrik melebihi batas aman (1000 W). Periksa perangkat Anda!',
       notificationDetails,
     );
+  }
+
+  void _setCurrentMonth() {
+    final now = DateTime.now(); // Mendapatkan tanggal dan waktu saat ini
+    final monthNames = [
+      "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+      "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+    ];
+    setState(() {
+      bulan = monthNames[now.month - 1]; // Mengatur bulan sesuai dengan bulan saat ini
+    });
   }
 
   @override
@@ -103,50 +115,62 @@ class _HomePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildCostCard(),
-            SizedBox(height: 16),
             _buildMotivationalText(),
             SizedBox(height: 16),
-            Text(
-              'Data Penggunaan Energi',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+            _buildEnergyUsageCard(), // Kartu "Data Penggunaan Energi"
+          ],
+        ),
+      ),
+    );
+  }
+
+Widget _buildCostCard() {
+  double energyValue = double.tryParse(energy.split(' ').first) ?? 0.0;
+  bool isLowEnergy = energyValue < 0.50;
+
+  return Card(
+    color: Color(0xFFfff7e8),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+    child: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Energy bulan $bulan', style: _boldTextStyle()),
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: energy, // Teks energy
+                  style: _largeTextStyle().copyWith(color: Color(0xFF3a7b7e)), // Warna hijau
+                ),
+                TextSpan(
+                  text: ' KW/h', // Teks "KW/h"
+                  style: TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold), // Warna default (hitam)
+                ),
+              ],
             ),
-            SizedBox(height: 16),
-            _buildInfoRow('Power', power, 'Current', current),
-            SizedBox(height: 16),
-            _buildInfoRow('Voltase', voltase, 'Energy', energy),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCostCard() {
-    double energyValue = double.tryParse(energy.split(' ').first) ?? 0.0;
-    bool isLowEnergy = energyValue < 0.50;
-
-    return Card(
-      color: Color(0xFFfff7e8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Energy bulan ini', style: _boldTextStyle()),
-            SizedBox(height: 8),
-            Text(energy, style: _largeTextStyle()),
-            if (isLowEnergy) ...[
-              SizedBox(height: 16),
-              Text(
-                'Perkiraan biaya bulan ini: Rp. ${energyValue * 1160}',
-                style: TextStyle(fontSize: 16, color: Colors.black),
+          ),
+          if (isLowEnergy)
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Perkiraan biaya bulan ini: Rp.',
+                    style: TextStyle(fontSize: 15, color: Colors.black, fontWeight: FontWeight.bold),
+                  ),
+                  TextSpan(
+                    text: '${energyValue * 1160}',
+                    style: TextStyle(fontSize: 20, color: Color(0xFF3a7b7e), fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
-            ],
-          ],
-        ),
+            ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildMotivationalText() {
     return Row(
@@ -181,7 +205,6 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-        SizedBox(width: 20),
         Image.asset(
           'assets/coffe_woman.png',
           height: 240,
@@ -193,33 +216,93 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildInfoRow(String title1, String data1, String title2, String data2) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Expanded(child: _buildInfoCard(title1, 'Desember', data1)),
-        SizedBox(width: 8),
-        Expanded(child: _buildInfoCard(title2, 'Desember', data2)),
-      ],
-    );
-  }
-
-  Widget _buildInfoCard(String title, String period, String data) {
+  Widget _buildEnergyUsageCard() {
     return Card(
       color: Color(0xFFfff7e8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.0), // Mengatur sudut tumpul
+      ),
+      elevation: 4,
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: _boldTextStyle()),
-            SizedBox(height: 8),
-            Text(period, style: _mediumTextStyle()),
-            SizedBox(height: 8),
-            Text(data, style: _mediumTextStyle()),
+            Text(
+              'Data Penggunaan Energi Bulan $bulan', // Menambahkan variabel $bulan
+              style: _boldTextStyle(),
+            ),
+            SizedBox(height: 15),
+            Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: _buildShadowBox(
+                  child: _buildEnergyDataRow('Arus', current, unit: 'Ampere'),
+                ),
+              ),
+              SizedBox(width: 10), // Jarak antara shadow box
+              Expanded(
+                child: _buildShadowBox(
+                  child: _buildEnergyDataRow('Daya', power, unit: 'Watt'),
+                ),
+              ),
+              SizedBox(width: 10), // Jarak antara shadow box
+              Expanded(
+                child: _buildShadowBox(
+                  child: _buildEnergyDataRow('Tegangan', voltase, unit: 'Volt'),
+                ),
+              ),
+            ],
+          )
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildShadowBox({required Widget child}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      decoration: BoxDecoration(
+        color: Color(0xFFfff7e8), // Warna latar belakang shadow box
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.4),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: Offset(0, 3), // Efek bayangan
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+
+  Widget _buildEnergyDataRow(String label, String value, {required String unit}) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center, // Menengahkan secara vertikal
+      crossAxisAlignment: CrossAxisAlignment.center, // Menengahkan secara horizontal
+      children: [
+        Text(
+          '$label :', // Label (misal: "Arus :", "Daya :", "Tegangan :")
+          style: _boldTextStyle(), // Gaya teks untuk label (lebih kecil)
+          textAlign: TextAlign.center, // Memastikan teks berada di tengah
+        ),
+        SizedBox(height: 4), // Jarak antara label dan nilai
+        Text(
+          value, // Nilai (misal: "10", "950", "220")
+          style: _largeValueTextStyle(), // Gaya teks untuk angka (lebih besar)
+          textAlign: TextAlign.center, // Memastikan teks berada di tengah
+        ),
+        SizedBox(height: 4), // Jarak antara nilai dan satuan
+        Text(
+          unit, // Satuan (misal: "Ampere", "Watt", "Volt")
+          style: _boldTextStyle(), // Gaya teks untuk satuan (lebih kecil)
+          textAlign: TextAlign.center, // Memastikan teks berada di tengah
+        ),
+      ],
     );
   }
 
@@ -266,7 +349,15 @@ class _HomePageState extends State<HomePage> {
     return TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.black);
   }
 
-  TextStyle _mediumTextStyle() {
+  TextStyle _smallLabelTextStyle() {
+    return TextStyle(fontSize: 12, fontWeight: FontWeight.normal, color: Colors.black);
+  }
+
+  TextStyle _largeValueTextStyle() {
+    return TextStyle(fontSize: 35, fontWeight: FontWeight.bold, color: Color(0xFF3a7b7e));
+  }
+
+  TextStyle _smallUnitTextStyle() {
     return TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: Colors.black);
   }
 }

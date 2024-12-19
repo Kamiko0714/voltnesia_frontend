@@ -99,7 +99,6 @@ class ProfilePage extends StatelessWidget {
               ],
             ),
           ),
-          // Logout Button
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: ElevatedButton(

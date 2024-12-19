@@ -80,6 +80,8 @@ class _PassrecState extends State<Passrec> {
                 decoration: InputDecoration(
                   labelText: 'E-mail',
                   border: OutlineInputBorder(),
+                  filled: true, // Mengaktifkan pengisian latar belakang
+                  fillColor: Color(0xFFfff7e8), // Warna latar belakang
                 ),
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {

@@ -124,6 +124,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 decoration: InputDecoration(
                   labelText: 'Nama User',
                   border: OutlineInputBorder(),
+                  filled: true, // Mengaktifkan pengisian latar belakang
+                  fillColor: Color(0xFFfff7e8), // Warna latar belakang
                 ),
               ),
               SizedBox(height: 16.0),
@@ -132,6 +134,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 decoration: InputDecoration(
                   labelText: 'Email',
                   border: OutlineInputBorder(),
+                  filled: true, // Mengaktifkan pengisian latar belakang
+                  fillColor: Color(0xFFfff7e8), // Warna latar belakang
                 ),
               ),
               SizedBox(height: 16.0),
@@ -141,6 +145,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 decoration: InputDecoration(
                   labelText: 'Password',
                   border: OutlineInputBorder(),
+                  filled: true, // Mengaktifkan pengisian latar belakang
+                  fillColor: Color(0xFFfff7e8), // Warna latar belakang
                 ),
               ),
               SizedBox(height: 24.0),

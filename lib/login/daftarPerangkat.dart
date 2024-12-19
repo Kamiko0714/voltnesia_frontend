@@ -94,6 +94,8 @@ class _DaftarPerangkatPageState extends State<DaftarPerangkatPage> {
               decoration: InputDecoration(
                 labelText: 'Isi ID Perangkat',
                 border: OutlineInputBorder(),
+                filled: true, // Mengaktifkan pengisian latar belakang
+                fillColor: Color(0xFFfff7e8), // Warna latar belakang
               ),
             ),
             SizedBox(height: 20),

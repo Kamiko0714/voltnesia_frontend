@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart'; // Untuk Circular Gauge
 import 'package:fl_chart/fl_chart.dart'; // Untuk grafik frekuensi
-import 'package:flutter_local_notifications/flutter_local_notifications.dart'; // Import notifikasi
 
 class InformasiPage extends StatefulWidget {
   @override
@@ -13,85 +12,75 @@ class _InformasiPageState extends State<InformasiPage> {
   double kondisi = 0.0; // Data untuk kondisi
   List<double> frekuensi = [50, 45, 55, 60, 52]; // Data frekuensi statis
   bool isLoading = false; // Indikator loading
-  late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
   @override
   void initState() {
     super.initState();
 
-    // Inisialisasi notifikasi
-    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-    var androidInitialization = AndroidInitializationSettings('app_icon');
-    var initializationSettings =
-        InitializationSettings(android: androidInitialization);
-    flutterLocalNotificationsPlugin.initialize(initializationSettings);
-
     // Set data secara manual (contoh)
     setState(() {
       suhu = 55.0; // Misalnya suhu diatur secara manual
       kondisi = 90.0; // Kondisi diatur ke 90% secara manual
-
-      // Cek suhu dan tampilkan notifikasi jika suhu mencapai 50
-      if (suhu >= 50.0) {
-        _showNotification();
-      }
     });
-  }
-
-  // Fungsi untuk menampilkan notifikasi
-  Future<void> _showNotification() async {
-    var androidDetails = AndroidNotificationDetails(
-      'channel_id', 
-      'channel_name', 
-      channelDescription: 'Channel untuk peringatan suhu',
-      importance: Importance.high,
-      priority: Priority.high,
-    );
-    var platformDetails = NotificationDetails(android: androidDetails);
-
-    await flutterLocalNotificationsPlugin.show(
-      0,
-      'Peringatan Suhu Tinggi!',
-      'Suhu perangkat telah mencapai $suhu °C, periksa perangkat segera.',
-      platformDetails,
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF15aea2), // Warna latar belakang halaman
+      backgroundColor: Color(0xFFfff7e8),
       appBar: AppBar(
-        title: Text('INFO PERANGKAT'),
+        title: Text('INFO PERANGKAT', style: TextStyle(color: Colors.black)),
         backgroundColor: Color(0xFFFF15aea2),
         elevation: 0,
-        foregroundColor: Colors.black,
+        iconTheme: IconThemeData(color: Colors.black),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Kondisi Perangkat
-            Container(
-              color: Color(0xFFfff7e8),
-              padding: EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'KONDISI PERANGKAT PINTAR',
-                    style: TextStyle(
-                      color: Color(0xFFFF15aea2),
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+      body: Container(
+        color: Color(0xFFFF15aea2),
+        child: Container(
+          padding: EdgeInsets.all(26.0),
+          decoration: BoxDecoration(
+            color: Color(0xFFfff7e8),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(40.0),
+              topRight: Radius.circular(40.0),
+            ),
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'KONDISI PERANGKAT PINTAR',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+                ),
+                SizedBox(height: 20),
+                Text(
+                  'Informasi terkini tentang suhu dan kondisi perangkat pintar Anda.',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(fontSize: 16, color: Colors.black),
+                ),
+                SizedBox(height: 20),
+                Container(
+                  width: 350, //masih harus di setting biar pas
+                  padding: EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFfff7e8), // Warna latar belakang kotak
+                    borderRadius: BorderRadius.circular(25.0), // Sudut kotak yang melengkung
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 5, // Mengurangi spread radius untuk bayangan lebih kecil
+                        blurRadius: 5, // Mengurangi blur radius untuk bayangan lebih tipis
+                        offset: Offset(0, 5), // Mengurangi offset untuk bayangan lebih kecil
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Column(
                     children: [
                       _buildGauge(
                         title: "Suhu",
@@ -101,6 +90,7 @@ class _InformasiPageState extends State<InformasiPage> {
                         max: 100,
                         color: Colors.blueAccent,
                       ),
+                      SizedBox(height: 20), // Jarak antara gauge suhu dan kondisi
                       _buildGauge(
                         title: "Kondisi",
                         value: kondisi,
@@ -111,26 +101,36 @@ class _InformasiPageState extends State<InformasiPage> {
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
-            SizedBox(height: 16),
-            // Grafik Frekuensi
-            Container(
-              color: Color(0xFFfff7e8),
-              padding: EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'FREKUENSI',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                ),
+                SizedBox(height: 20),
+                Text(
+                  'FREKUENSI',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'Grafik frekuensi perangkat pintar Anda.',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(fontSize: 16, color: Colors.black),
+                ),
+                SizedBox(height: 20),
+                Container(
+                  width: 350, //masih harus di setting biar pas
+                  padding: EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFfff7e8), // Warna latar belakang kotak
+                    borderRadius: BorderRadius.circular(10.0), // Sudut kotak yang melengkung
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 5, // Mengurangi spread radius untuk bayangan lebih kecil
+                        blurRadius: 5, // Mengurangi blur radius untuk bayangan lebih tipis
+                        offset: Offset(0, 5), // Mengurangi offset untuk bayangan lebih kecil
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 16),
-                  isLoading
+                  child: isLoading
                       ? CircularProgressIndicator()
                       : Container(
                           height: 200,
@@ -182,10 +182,10 @@ class _InformasiPageState extends State<InformasiPage> {
                             ),
                           ),
                         ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
