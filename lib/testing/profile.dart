@@ -5,6 +5,7 @@ import 'edit_profile.dart';
 import 'riwayat.dart';
 import 'informasi.dart';
 import 'kontrol.dart';
+import 'homepage.dart';
 
 class ProfilePage extends StatelessWidget {
   @override
@@ -15,9 +16,10 @@ class ProfilePage extends StatelessWidget {
         backgroundColor: Color(0xFFfff7e8),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePage()),
+                  ),
         ),
       ),
       body: Column(

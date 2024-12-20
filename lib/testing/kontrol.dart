@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'homepage.dart';
 
 class KontrolPage extends StatefulWidget {
   @override
@@ -46,6 +47,13 @@ class _KontrolScreenState extends State<KontrolPage> {
         backgroundColor: Color(0xFFFF15aea2),
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePage()),
+                  ),
+        ),
       ),
       body: Container(
         color: Color(0xFFFF15aea2),

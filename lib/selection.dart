@@ -47,7 +47,7 @@ class Selection extends StatelessWidget {
                     ),
                     child: ListTile(
                       leading: Icon(Icons.folder),
-                      title: Text('ESP ID : testing'),
+                      title: Text('Televisi'),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -69,7 +69,7 @@ class Selection extends StatelessWidget {
                     ),
                     child: ListTile(
                       leading: Icon(Icons.folder),
-                      title: Text('ESP ID : voltnesia2k24'),
+                      title: Text('Lampu Kamar'),
                       onTap: () {
                         Navigator.push(
                           context,

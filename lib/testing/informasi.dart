@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart'; // Untuk Circular Gauge
 import 'package:fl_chart/fl_chart.dart'; // Untuk grafik frekuensi
+import 'homepage.dart';
 
 class InformasiPage extends StatefulWidget {
   @override
@@ -35,7 +36,10 @@ class _InformasiPageState extends State<InformasiPage> {
         iconTheme: IconThemeData(color: Colors.black),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePage()),
+                  ),
         ),
       ),
       body: Container(

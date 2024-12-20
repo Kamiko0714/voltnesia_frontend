@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'homepage.dart';
 
 class RiwayatPage extends StatefulWidget {
   @override
@@ -39,7 +40,10 @@ class _RiwayatPageState extends State<RiwayatPage> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.indigo.shade900),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePage()),
+                  ),
         ),
       ),
       backgroundColor: Color(0xFFFF15aea2),
