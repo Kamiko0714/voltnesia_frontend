@@ -7,7 +7,7 @@ class Firstpage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Color(0xFFFF15aea2), 
       appBar: AppBar(
-        title: Text('Voltnesia Smartmeter'),
+        title: Text(''),
         backgroundColor: Color(0xFFFF15aea2), 
       ),
       body: Center(
@@ -36,7 +36,7 @@ class Firstpage extends StatelessWidget {
             ),
             SizedBox(height: 20),
             Text(
-              'Voltnesia, solusi inovatif untuk energi efektif',
+              'Solusi inovatif untuk energi efektif',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 16, color: Colors.white),
             ),
